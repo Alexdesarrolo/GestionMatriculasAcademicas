@@ -1,0 +1,21 @@
+package com.ale.edu.gestionmatriculasacademicas.service.mapper;
+
+import com.ale.edu.gestionmatriculasacademicas.domain.AvailableSlot;
+import com.ale.edu.gestionmatriculasacademicas.domain.Program;
+import com.ale.edu.gestionmatriculasacademicas.service.dto.AvailableSlotDTO;
+import com.ale.edu.gestionmatriculasacademicas.service.dto.ProgramDTO;
+import org.mapstruct.*;
+
+/**
+ * Mapper for the entity {@link AvailableSlot} and its DTO {@link AvailableSlotDTO}.
+ */
+@Mapper(componentModel = "spring")
+public interface AvailableSlotMapper extends EntityMapper<AvailableSlotDTO, AvailableSlot> {
+    @Mapping(target = "program", source = "program", qualifiedByName = "programId")
+    AvailableSlotDTO toDto(AvailableSlot s);
+
+    @Named("programId")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
+    ProgramDTO toDtoProgramId(Program program);
+}

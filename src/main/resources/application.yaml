@@ -1,3 +1,33 @@
 spring:
   application:
     name: GestionMatriculasAcademicas
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/maticulas_academicas
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  # H2 para pruebas locales rápidas (cambia datasource arriba por este)
+  # datasource:
+  #   url: jdbc:h2:mem:kimsa
+  #   driver-class-name: org.h2.Driver
+
+server:
+  port: 8081
+
+jwt:
+  secret: YTI5YzgwZmE1NDVlY2ZjY2EyNWU5YThiYmMzYjhiYThiYTVlYmU1YWE2M2U4ODYy
+  expiration: 86400000 # 24 horas
+
+cors:
+  allowed-origins: http://localhost:4200
