@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/register").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/test-hash").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
