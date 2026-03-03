@@ -1,39 +1,31 @@
 package com.ale.edu.gestionmatriculasacademicas.service.dto;
 
-import java.io.Serializable;
 
 /**
  * A DTO representing a password change required data - current and new password.
  */
-public class PasswordChangeDTO implements Serializable {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
-    private static final long serialVersionUID = 1L;
+public class PasswordChangeDTO {
 
+    @NotBlank
     private String currentPassword;
+
+    @NotBlank
+    @Size(min = 8, max = 50)
     private String newPassword;
 
-    public PasswordChangeDTO() {
-        // Empty constructor needed for Jackson.
-    }
+    public PasswordChangeDTO() {}
 
     public PasswordChangeDTO(String currentPassword, String newPassword) {
         this.currentPassword = currentPassword;
         this.newPassword = newPassword;
     }
 
-    public String getCurrentPassword() {
-        return currentPassword;
-    }
+    public String getCurrentPassword() { return currentPassword; }
+    public void setCurrentPassword(String currentPassword) { this.currentPassword = currentPassword; }
 
-    public void setCurrentPassword(String currentPassword) {
-        this.currentPassword = currentPassword;
-    }
-
-    public String getNewPassword() {
-        return newPassword;
-    }
-
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
-    }
+    public String getNewPassword() { return newPassword; }
+    public void setNewPassword(String newPassword) { this.newPassword = newPassword; }
 }

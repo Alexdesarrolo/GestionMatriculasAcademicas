@@ -10,11 +10,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.mapstruct.*;
 
-/**
- * Mapper for the entity {@link Subject} and its DTO {@link SubjectDTO}.
- */
 @Mapper(componentModel = "spring")
 public interface SubjectMapper extends EntityMapper<SubjectDTO, Subject> {
+
     @Mapping(target = "programs", source = "programs", qualifiedByName = "programNameSet")
     @Mapping(target = "appointments", source = "appointments", qualifiedByName = "appointmentIdSet")
     SubjectDTO toDto(Subject s);
@@ -24,6 +22,16 @@ public interface SubjectMapper extends EntityMapper<SubjectDTO, Subject> {
     @Mapping(target = "appointments", ignore = true)
     @Mapping(target = "removeAppointments", ignore = true)
     Subject toEntity(SubjectDTO subjectDTO);
+
+    // Agrega esto para el partialUpdate
+    @Override
+    @Named("partialUpdate")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "programs", ignore = true)
+    @Mapping(target = "removePrograms", ignore = true)
+    @Mapping(target = "appointments", ignore = true)
+    @Mapping(target = "removeAppointments", ignore = true)
+    void partialUpdate(@MappingTarget Subject entity, SubjectDTO dto);
 
     @Named("programName")
     @BeanMapping(ignoreByDefault = true)
