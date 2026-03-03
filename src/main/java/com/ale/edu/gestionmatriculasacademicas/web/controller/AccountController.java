@@ -7,6 +7,7 @@ import com.ale.edu.gestionmatriculasacademicas.service.dto.TokenDTO;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,8 +16,11 @@ public class AccountController {
 
     private final AccountService accountService;
 
-    public AccountController(AccountService accountService) {
+    private final PasswordEncoder passwordEncoder;
+
+    public AccountController(AccountService accountService, PasswordEncoder passwordEncoder) {
         this.accountService = accountService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/authenticate")
@@ -30,4 +34,10 @@ public class AccountController {
         accountService.changePassword(dto.getCurrentPassword(), dto.getNewPassword());
         return ResponseEntity.ok().build();
     }
+
+
+@GetMapping("/test-hash")
+public String testHash() {
+    return passwordEncoder.encode("admin");
+}
 }

@@ -40,6 +40,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
                 .requestMatchers("/api/register").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/test-hash").permitAll()
                 .requestMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
             )
