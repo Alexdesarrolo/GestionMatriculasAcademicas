@@ -52,6 +52,9 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setActivated(true);
 
+         user.setCreatedBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
+        user.setLastModifiedBy(SecurityUtils.getCurrentUserLogin().orElse("system"));
+
         // Asignar roles
         if (userDTO.getAuthorities() != null) {
             Set<Authority> authorities = userDTO.getAuthorities().stream()

@@ -3,8 +3,9 @@ package com.ale.edu.gestionmatriculasacademicas.repository;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.*;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -25,8 +26,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findOneByEmailIgnoreCase(String email);
     Optional<User> findOneByLogin(String login);
 
-    // @EntityGraph(attributePaths = "authorities")
-    // @Cacheable(cacheNames = USERS_BY_LOGIN_CACHE, unless = "#result == null")
+    @EntityGraph(attributePaths = "authorities")
+    //@Cacheable(cacheNames = USERS_BY_LOGIN_CACHE, unless = "#result == null")
     Optional<User> findOneWithAuthoritiesByLogin(String login);
 
     // @EntityGraph(attributePaths = "authorities")
