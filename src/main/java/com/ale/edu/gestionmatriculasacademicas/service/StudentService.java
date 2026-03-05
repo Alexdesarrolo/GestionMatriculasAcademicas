@@ -55,4 +55,6 @@ public interface StudentService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    Page<StudentDTO> findAll(Pageable pageable);
 }

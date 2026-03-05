@@ -12,18 +12,28 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.mapstruct.*;
 
-/**
- * Mapper for the entity {@link Appointment} and its DTO {@link AppointmentDTO}.
- */
 @Mapper(componentModel = "spring")
 public interface AppointmentMapper extends EntityMapper<AppointmentDTO, Appointment> {
+
     @Mapping(target = "student", source = "student", qualifiedByName = "studentId")
     @Mapping(target = "availableSlot", source = "availableSlot", qualifiedByName = "availableSlotId")
     @Mapping(target = "desiredSubjects", source = "desiredSubjects", qualifiedByName = "subjectNameSet")
     AppointmentDTO toDto(Appointment s);
 
     @Mapping(target = "removeDesiredSubjects", ignore = true)
+    @Mapping(target = "desiredSubjects", ignore = true)
+    @Mapping(target = "student", ignore = true)
+    @Mapping(target = "availableSlot", ignore = true)
     Appointment toEntity(AppointmentDTO appointmentDTO);
+
+    @Override
+    @Named("partialUpdate")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "student", ignore = true)
+    @Mapping(target = "availableSlot", ignore = true)
+    @Mapping(target = "removeDesiredSubjects", ignore = true)
+    @Mapping(target = "desiredSubjects", ignore = true)
+    void partialUpdate(@MappingTarget Appointment entity, AppointmentDTO dto);
 
     @Named("studentId")
     @BeanMapping(ignoreByDefault = true)
@@ -40,6 +50,7 @@ public interface AppointmentMapper extends EntityMapper<AppointmentDTO, Appointm
     @Mapping(target = "id", source = "id")
     @Mapping(target = "name", source = "name")
     SubjectDTO toDtoSubjectName(Subject subject);
+    
 
     @Named("subjectNameSet")
     default Set<SubjectDTO> toDtoSubjectNameSet(Set<Subject> subject) {

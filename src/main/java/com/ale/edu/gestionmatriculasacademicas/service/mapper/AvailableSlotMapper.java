@@ -6,13 +6,20 @@ import com.ale.edu.gestionmatriculasacademicas.service.dto.AvailableSlotDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.ProgramDTO;
 import org.mapstruct.*;
 
-/**
- * Mapper for the entity {@link AvailableSlot} and its DTO {@link AvailableSlotDTO}.
- */
 @Mapper(componentModel = "spring")
 public interface AvailableSlotMapper extends EntityMapper<AvailableSlotDTO, AvailableSlot> {
+
     @Mapping(target = "program", source = "program", qualifiedByName = "programId")
     AvailableSlotDTO toDto(AvailableSlot s);
+
+    @Mapping(target = "program", ignore = true)
+    AvailableSlot toEntity(AvailableSlotDTO availableSlotDTO);
+
+    @Override
+    @Named("partialUpdate")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "program", ignore = true)
+    void partialUpdate(@MappingTarget AvailableSlot entity, AvailableSlotDTO dto);
 
     @Named("programId")
     @BeanMapping(ignoreByDefault = true)

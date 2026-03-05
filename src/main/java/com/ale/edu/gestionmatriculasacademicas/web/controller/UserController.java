@@ -22,14 +22,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
-public class UserResource {
+public class UserController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UserResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
     private final UserRepository userRepository;
 
-    public UserResource(UserService userService, UserRepository userRepository) {
+    public UserController(UserService userService, UserRepository userRepository) {
         this.userService = userService;
         this.userRepository = userRepository;
     }

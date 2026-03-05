@@ -13,11 +13,20 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface ProgramMapper extends EntityMapper<ProgramDTO, Program> {
+
     @Mapping(target = "subjects", source = "subjects", qualifiedByName = "subjectNameSet")
     ProgramDTO toDto(Program s);
 
     @Mapping(target = "removeSubject", ignore = true)
+    @Mapping(target = "subjects", ignore = true)
     Program toEntity(ProgramDTO programDTO);
+
+    @Override
+    @Named("partialUpdate")
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "subjects", ignore = true)
+    @Mapping(target = "removeSubject", ignore = true)
+    void partialUpdate(@MappingTarget Program entity, ProgramDTO dto);
 
     @Named("subjectName")
     @BeanMapping(ignoreByDefault = true)

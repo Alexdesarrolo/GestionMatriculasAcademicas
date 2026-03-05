@@ -1,201 +1,111 @@
-// package com.ale.edu.gestionmatriculasacademicas.web.rest;
+package com.ale.edu.gestionmatriculasacademicas.web.controller;
 
-// import com.ale.edu.gestionmatriculasacademicas.repository.ProgramRepository;
-// import com.ale.edu.gestionmatriculasacademicas.service.ProgramQueryService;
-// import com.ale.edu.gestionmatriculasacademicas.service.ProgramService;
-// import com.ale.edu.gestionmatriculasacademicas.service.criteria.ProgramCriteria;
-// import com.ale.edu.gestionmatriculasacademicas.service.dto.ProgramDTO;
-// import com.ale.edu.gestionmatriculasacademicas.web.rest.errors.BadRequestAlertException;
-// import jakarta.validation.Valid;
-// import jakarta.validation.constraints.NotNull;
-// import java.net.URI;
-// import java.net.URISyntaxException;
-// import java.util.List;
-// import java.util.Objects;
-// import java.util.Optional;
-// import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
-// import org.springframework.beans.factory.annotation.Value;
-// import org.springframework.data.domain.Page;
-// import org.springframework.data.domain.Pageable;
-// import org.springframework.http.HttpHeaders;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.*;
-// import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-// import tech.jhipster.web.util.HeaderUtil;
-// import tech.jhipster.web.util.PaginationUtil;
-// import tech.jhipster.web.util.ResponseUtil;
+import com.ale.edu.gestionmatriculasacademicas.repository.ProgramRepository;
+import com.ale.edu.gestionmatriculasacademicas.service.ProgramService;
+import com.ale.edu.gestionmatriculasacademicas.service.dto.ProgramDTO;
+import com.ale.edu.gestionmatriculasacademicas.web.controller.errors.BadRequestException;
+import com.ale.edu.gestionmatriculasacademicas.web.controller.errors.ResourceNotFoundException;
 
-// /**
-//  * REST controller for managing {@link com.ale.edu.gestionmatriculasacademicas.domain.Program}.
-//  */
-// @RestController
-// @RequestMapping("/api/programs")
-// public class ProgramResource {
+import jakarta.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-//     private static final Logger LOG = LoggerFactory.getLogger(ProgramResource.class);
+@RestController
+@RequestMapping("/api/programs")
+public class ProgramResource {
 
-//     private static final String ENTITY_NAME = "program";
+    private static final Logger LOG = LoggerFactory.getLogger(ProgramResource.class);
 
-//     @Value("${jhipster.clientApp.name}")
-//     private String applicationName;
+    private final ProgramService programService;
+    private final ProgramRepository programRepository;
 
-//     private final ProgramService programService;
+    public ProgramResource(ProgramService programService, ProgramRepository programRepository) {
+        this.programService = programService;
+        this.programRepository = programRepository;
+    }
 
-//     private final ProgramRepository programRepository;
+    // POST /api/programs
+    @PostMapping
+    public ResponseEntity<ProgramDTO> createProgram(@Valid @RequestBody ProgramDTO programDTO) throws URISyntaxException {
+        LOG.debug("REST request to save Program : {}", programDTO);
+        if (programDTO.getId() != null) {
+            throw new BadRequestException("Un nuevo programa no puede tener ID");
+        }
+        ProgramDTO result = programService.save(programDTO);
+        return ResponseEntity
+            .created(new URI("/api/programs/" + result.getId()))
+            .body(result);
+    }
 
-//     private final ProgramQueryService programQueryService;
+    // PUT /api/programs/{id}
+    @PutMapping("/{id}")
+    public ResponseEntity<ProgramDTO> updateProgram(
+        @PathVariable Long id,
+        @Valid @RequestBody ProgramDTO programDTO
+    ) {
+        LOG.debug("REST request to update Program : {}", id);
+        if (programDTO.getId() == null || !Objects.equals(id, programDTO.getId())) {
+            throw new BadRequestException("ID inválido");
+        }
+        if (!programRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Programa no encontrado con id: " + id);
+        }
+        ProgramDTO result = programService.update(programDTO);
+        return ResponseEntity.ok(result);
+    }
 
-//     public ProgramResource(ProgramService programService, ProgramRepository programRepository, ProgramQueryService programQueryService) {
-//         this.programService = programService;
-//         this.programRepository = programRepository;
-//         this.programQueryService = programQueryService;
-//     }
+    // PATCH /api/programs/{id}
+    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    public ResponseEntity<ProgramDTO> partialUpdateProgram(
+        @PathVariable Long id,
+        @RequestBody ProgramDTO programDTO
+    ) {
+        LOG.debug("REST request to partial update Program : {}", id);
+        if (programDTO.getId() == null || !Objects.equals(id, programDTO.getId())) {
+            throw new BadRequestException("ID inválido");
+        }
+        if (!programRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Programa no encontrado con id: " + id);
+        }
+        return programService.partialUpdate(programDTO)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
 
-//     /**
-//      * {@code POST  /programs} : Create a new program.
-//      *
-//      * @param programDTO the programDTO to create.
-//      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new programDTO, or with status {@code 400 (Bad Request)} if the program has already an ID.
-//      * @throws URISyntaxException if the Location URI syntax is incorrect.
-//      */
-//     @PostMapping("")
-//     public ResponseEntity<ProgramDTO> createProgram(@Valid @RequestBody ProgramDTO programDTO) throws URISyntaxException {
-//         LOG.debug("REST request to save Program : {}", programDTO);
-//         if (programDTO.getId() != null) {
-//             throw new BadRequestAlertException("A new program cannot already have an ID", ENTITY_NAME, "idexists");
-//         }
-//         programDTO = programService.save(programDTO);
-//         return ResponseEntity.created(new URI("/api/programs/" + programDTO.getId()))
-//             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, programDTO.getId().toString()))
-//             .body(programDTO);
-//     }
+    // GET /api/programs
+    @GetMapping
+    public ResponseEntity<List<ProgramDTO>> getAllPrograms(Pageable pageable) {
+        LOG.debug("REST request to get all Programs");
+        Page<ProgramDTO> page = programService.findAll(pageable);
+        return ResponseEntity.ok(page.getContent());
+    }
 
-//     /**
-//      * {@code PUT  /programs/:id} : Updates an existing program.
-//      *
-//      * @param id the id of the programDTO to save.
-//      * @param programDTO the programDTO to update.
-//      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated programDTO,
-//      * or with status {@code 400 (Bad Request)} if the programDTO is not valid,
-//      * or with status {@code 500 (Internal Server Error)} if the programDTO couldn't be updated.
-//      * @throws URISyntaxException if the Location URI syntax is incorrect.
-//      */
-//     @PutMapping("/{id}")
-//     public ResponseEntity<ProgramDTO> updateProgram(
-//         @PathVariable(value = "id", required = false) final Long id,
-//         @Valid @RequestBody ProgramDTO programDTO
-//     ) throws URISyntaxException {
-//         LOG.debug("REST request to update Program : {}, {}", id, programDTO);
-//         if (programDTO.getId() == null) {
-//             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-//         }
-//         if (!Objects.equals(id, programDTO.getId())) {
-//             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-//         }
+    // GET /api/programs/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<ProgramDTO> getProgram(@PathVariable Long id) {
+        LOG.debug("REST request to get Program : {}", id);
+        return programService.findOne(id)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
 
-//         if (!programRepository.existsById(id)) {
-//             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-//         }
-
-//         programDTO = programService.update(programDTO);
-//         return ResponseEntity.ok()
-//             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, programDTO.getId().toString()))
-//             .body(programDTO);
-//     }
-
-//     /**
-//      * {@code PATCH  /programs/:id} : Partial updates given fields of an existing program, field will ignore if it is null
-//      *
-//      * @param id the id of the programDTO to save.
-//      * @param programDTO the programDTO to update.
-//      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated programDTO,
-//      * or with status {@code 400 (Bad Request)} if the programDTO is not valid,
-//      * or with status {@code 404 (Not Found)} if the programDTO is not found,
-//      * or with status {@code 500 (Internal Server Error)} if the programDTO couldn't be updated.
-//      * @throws URISyntaxException if the Location URI syntax is incorrect.
-//      */
-//     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-//     public ResponseEntity<ProgramDTO> partialUpdateProgram(
-//         @PathVariable(value = "id", required = false) final Long id,
-//         @NotNull @RequestBody ProgramDTO programDTO
-//     ) throws URISyntaxException {
-//         LOG.debug("REST request to partial update Program partially : {}, {}", id, programDTO);
-//         if (programDTO.getId() == null) {
-//             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-//         }
-//         if (!Objects.equals(id, programDTO.getId())) {
-//             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-//         }
-
-//         if (!programRepository.existsById(id)) {
-//             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-//         }
-
-//         Optional<ProgramDTO> result = programService.partialUpdate(programDTO);
-
-//         return ResponseUtil.wrapOrNotFound(
-//             result,
-//             HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, programDTO.getId().toString())
-//         );
-//     }
-
-//     /**
-//      * {@code GET  /programs} : get all the programs.
-//      *
-//      * @param pageable the pagination information.
-//      * @param criteria the criteria which the requested entities should match.
-//      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of programs in body.
-//      */
-//     @GetMapping("")
-//     public ResponseEntity<List<ProgramDTO>> getAllPrograms(
-//         ProgramCriteria criteria,
-//         @org.springdoc.core.annotations.ParameterObject Pageable pageable
-//     ) {
-//         LOG.debug("REST request to get Programs by criteria: {}", criteria);
-
-//         Page<ProgramDTO> page = programQueryService.findByCriteria(criteria, pageable);
-//         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-//         return ResponseEntity.ok().headers(headers).body(page.getContent());
-//     }
-
-//     /**
-//      * {@code GET  /programs/count} : count all the programs.
-//      *
-//      * @param criteria the criteria which the requested entities should match.
-//      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
-//      */
-//     @GetMapping("/count")
-//     public ResponseEntity<Long> countPrograms(ProgramCriteria criteria) {
-//         LOG.debug("REST request to count Programs by criteria: {}", criteria);
-//         return ResponseEntity.ok().body(programQueryService.countByCriteria(criteria));
-//     }
-
-//     /**
-//      * {@code GET  /programs/:id} : get the "id" program.
-//      *
-//      * @param id the id of the programDTO to retrieve.
-//      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the programDTO, or with status {@code 404 (Not Found)}.
-//      */
-//     @GetMapping("/{id}")
-//     public ResponseEntity<ProgramDTO> getProgram(@PathVariable("id") Long id) {
-//         LOG.debug("REST request to get Program : {}", id);
-//         Optional<ProgramDTO> programDTO = programService.findOne(id);
-//         return ResponseUtil.wrapOrNotFound(programDTO);
-//     }
-
-//     /**
-//      * {@code DELETE  /programs/:id} : delete the "id" program.
-//      *
-//      * @param id the id of the programDTO to delete.
-//      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-//      */
-//     @DeleteMapping("/{id}")
-//     public ResponseEntity<Void> deleteProgram(@PathVariable("id") Long id) {
-//         LOG.debug("REST request to delete Program : {}", id);
-//         programService.delete(id);
-//         return ResponseEntity.noContent()
-//             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
-//             .build();
-//     }
-// }
+    // DELETE /api/programs/{id}
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProgram(@PathVariable Long id) {
+        LOG.debug("REST request to delete Program : {}", id);
+        if (!programRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Programa no encontrado con id: " + id);
+        }
+        programService.delete(id);
+    }
+}
