@@ -1,6 +1,8 @@
 package com.ale.edu.gestionmatriculasacademicas.repository;
 
 import com.ale.edu.gestionmatriculasacademicas.domain.Appointment;
+import com.ale.edu.gestionmatriculasacademicas.service.dto.AppointmentDTO;
+
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -28,4 +30,6 @@ public interface AppointmentRepository
     default Page<Appointment> findAllWithEagerRelationships(Pageable pageable) {
         return this.fetchBagRelationships(this.findAll(pageable));
     }
+
+    Page<Appointment> findByStudentId(Long studentId, Pageable pageable);
 }

@@ -38,19 +38,30 @@ public interface AppointmentMapper extends EntityMapper<AppointmentDTO, Appointm
     @Named("studentId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "firstName", source = "firstName")
+    @Mapping(target = "lastName", source = "lastName")
+    @Mapping(target = "studentCode", source = "studentCode")
+    @Mapping(target = "nationalId", source = "nationalId")
+    @Mapping(target = "active", source = "active")
     StudentDTO toDtoStudentId(Student student);
 
     @Named("availableSlotId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "startTime", source = "startTime")
+    @Mapping(target = "endTime", source = "endTime")
+    @Mapping(target = "availableSpots", source = "availableSpots")
+    @Mapping(target = "bookedSpots", source = "bookedSpots")
+    @Mapping(target = "active", source = "active")
     AvailableSlotDTO toDtoAvailableSlotId(AvailableSlot availableSlot);
 
     @Named("subjectName")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     @Mapping(target = "name", source = "name")
+    @Mapping(target = "code", source = "code")
+    @Mapping(target = "credits", source = "credits")
     SubjectDTO toDtoSubjectName(Subject subject);
-    
 
     @Named("subjectNameSet")
     default Set<SubjectDTO> toDtoSubjectNameSet(Set<Subject> subject) {

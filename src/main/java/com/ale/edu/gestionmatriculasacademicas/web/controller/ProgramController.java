@@ -21,14 +21,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/programs")
-public class ProgramResource {
+public class ProgramController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProgramResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProgramController.class);
 
     private final ProgramService programService;
     private final ProgramRepository programRepository;
 
-    public ProgramResource(ProgramService programService, ProgramRepository programRepository) {
+    public ProgramController(ProgramService programService, ProgramRepository programRepository) {
         this.programService = programService;
         this.programRepository = programRepository;
     }

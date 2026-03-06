@@ -24,5 +24,7 @@ public interface AvailableSlotMapper extends EntityMapper<AvailableSlotDTO, Avai
     @Named("programId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "codePrefix", source = "codePrefix")
     ProgramDTO toDtoProgramId(Program program);
 }
