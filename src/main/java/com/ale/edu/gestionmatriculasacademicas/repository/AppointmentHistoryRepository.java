@@ -1,6 +1,8 @@
 package com.ale.edu.gestionmatriculasacademicas.repository;
 
 import com.ale.edu.gestionmatriculasacademicas.domain.AppointmentHistory;
+import com.ale.edu.gestionmatriculasacademicas.service.dto.AppointmentHistoryDTO;
+
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -45,4 +47,6 @@ public interface AppointmentHistoryRepository
         "select appointmentHistory from AppointmentHistory appointmentHistory left join fetch appointmentHistory.performedBy where appointmentHistory.id =:id"
     )
     Optional<AppointmentHistory> findOneWithToOneRelationships(@Param("id") Long id);
+
+Page<AppointmentHistory> findByAppointmentId(Long appointmentId, Pageable pageable);
 }

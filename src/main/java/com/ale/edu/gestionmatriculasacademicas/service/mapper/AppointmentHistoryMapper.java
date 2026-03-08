@@ -29,6 +29,10 @@ public interface AppointmentHistoryMapper extends EntityMapper<AppointmentHistor
     @Named("appointmentId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "currentCredits", source = "currentCredits")
+    @Mapping(target = "status", source = "status")
+    @Mapping(target = "requestDate", source = "requestDate")
+    @Mapping(target = "notes", source = "notes")
     AppointmentDTO toDtoAppointmentId(Appointment appointment);
 
     @Named("userLogin")

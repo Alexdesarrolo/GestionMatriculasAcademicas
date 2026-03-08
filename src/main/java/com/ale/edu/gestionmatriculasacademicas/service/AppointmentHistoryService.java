@@ -55,4 +55,8 @@ public interface AppointmentHistoryService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    Page<AppointmentHistoryDTO> findAll(Pageable pageable);
+
+    Page<AppointmentHistoryDTO> findByAppointment(Long appointmentId, Pageable pageable);
 }
