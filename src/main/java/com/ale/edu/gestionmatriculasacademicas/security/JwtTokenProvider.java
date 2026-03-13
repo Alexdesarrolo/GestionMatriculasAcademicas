@@ -4,10 +4,12 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
@@ -19,14 +21,20 @@ public class JwtTokenProvider {
     private long jwtExpiration;
 
     public String generateToken(Authentication authentication) {
-        Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-        return Jwts.builder()
-            .setSubject(authentication.getName())
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
-            .signWith(key, SignatureAlgorithm.HS512)
-            .compact();
-    }
+    Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
+
+    String authorities = authentication.getAuthorities().stream()
+        .map(GrantedAuthority::getAuthority)
+        .collect(Collectors.joining(","));
+
+    return Jwts.builder()
+        .setSubject(authentication.getName())
+        .claim("auth", authorities)
+        .setIssuedAt(new Date())
+        .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+        .signWith(key, SignatureAlgorithm.HS512)
+        .compact();
+}
 
     public String getUsernameFromToken(String token) {
         Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
