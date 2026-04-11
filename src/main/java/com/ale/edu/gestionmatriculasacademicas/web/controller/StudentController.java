@@ -1,6 +1,7 @@
 package com.ale.edu.gestionmatriculasacademicas.web.controller;
 
 import com.ale.edu.gestionmatriculasacademicas.repository.StudentRepository;
+import com.ale.edu.gestionmatriculasacademicas.security.SecurityUtils;
 import com.ale.edu.gestionmatriculasacademicas.service.StudentService;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.StudentDTO;
 import com.ale.edu.gestionmatriculasacademicas.web.controller.errors.BadRequestException;
@@ -14,6 +15,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -108,4 +110,18 @@ public class StudentController {
         }
         studentService.delete(id);
     }
+
+    @GetMapping("/me")
+public ResponseEntity<StudentDTO> getMyProfile() {
+    String login = SecurityUtils.getCurrentUserLogin()
+        .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
+    return studentService.findAll(PageRequest.of(0, 1000))
+        .getContent()
+        .stream()
+        .filter(s -> s.getUser() != null && login.equals(s.getUser().getLogin()))
+        .findFirst()
+        .map(ResponseEntity::ok)
+        .orElse(ResponseEntity.notFound().build());
+}
 }

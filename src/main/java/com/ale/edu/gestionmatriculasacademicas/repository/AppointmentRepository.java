@@ -1,7 +1,6 @@
 package com.ale.edu.gestionmatriculasacademicas.repository;
 
 import com.ale.edu.gestionmatriculasacademicas.domain.Appointment;
-import com.ale.edu.gestionmatriculasacademicas.service.dto.AppointmentDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,13 +22,18 @@ public interface AppointmentRepository
         return this.fetchBagRelationships(this.findById(id));
     }
 
-    default List<Appointment> findAllWithEagerRelationships() {
-        return this.fetchBagRelationships(this.findAll());
-    }
+    
 
     default Page<Appointment> findAllWithEagerRelationships(Pageable pageable) {
         return this.fetchBagRelationships(this.findAll(pageable));
     }
 
     Page<Appointment> findByStudentId(Long studentId, Pageable pageable);
+
+    @Query(value = "SELECT a FROM Appointment a LEFT JOIN FETCH a.student LEFT JOIN FETCH a.availableSlot",
+       countQuery = "SELECT COUNT(a) FROM Appointment a")
+List<Appointment> findAllWithRelationships();
+
+
+
 }

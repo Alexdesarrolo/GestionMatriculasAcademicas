@@ -50,13 +50,13 @@ public class Appointment implements Serializable {
     @Column(name = "notes")
     private String notes;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "user", "program" }, allowSetters = true)
-    private Student student;
+   @ManyToOne(fetch = FetchType.EAGER)
+@JsonIgnoreProperties(value = { "user", "program" }, allowSetters = true)
+private Student student;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "program" }, allowSetters = true)
-    private AvailableSlot availableSlot;
+@ManyToOne(fetch = FetchType.EAGER)
+@JsonIgnoreProperties(value = { "program" }, allowSetters = true)
+private AvailableSlot availableSlot;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

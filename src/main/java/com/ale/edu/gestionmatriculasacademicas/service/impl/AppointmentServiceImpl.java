@@ -35,12 +35,11 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final SubjectRepository subjectRepository;
 
     public AppointmentServiceImpl(
-        AppointmentRepository appointmentRepository,
-        AppointmentMapper appointmentMapper,
-        StudentRepository studentRepository,
-        AvailableSlotRepository availableSlotRepository,
-        SubjectRepository subjectRepository
-    ) {
+            AppointmentRepository appointmentRepository,
+            AppointmentMapper appointmentMapper,
+            StudentRepository studentRepository,
+            AvailableSlotRepository availableSlotRepository,
+            SubjectRepository subjectRepository) {
         this.appointmentRepository = appointmentRepository;
         this.appointmentMapper = appointmentMapper;
         this.studentRepository = studentRepository;
@@ -70,21 +69,26 @@ public class AppointmentServiceImpl implements AppointmentService {
     public Optional<AppointmentDTO> partialUpdate(AppointmentDTO appointmentDTO) {
         LOG.debug("Request to partially update Appointment : {}", appointmentDTO);
         return appointmentRepository.findById(appointmentDTO.getId())
-            .map(existingAppointment -> {
-                appointmentMapper.partialUpdate(existingAppointment, appointmentDTO);
-                resolveRelations(existingAppointment, appointmentDTO);
-                return existingAppointment;
-            })
-            .map(appointmentRepository::save)
-            .map(appointmentMapper::toDto);
+                .map(existingAppointment -> {
+                    appointmentMapper.partialUpdate(existingAppointment, appointmentDTO);
+                    resolveRelations(existingAppointment, appointmentDTO);
+                    return existingAppointment;
+                })
+                .map(appointmentRepository::save)
+                .map(appointmentMapper::toDto);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<AppointmentDTO> findAll(Pageable pageable) {
-        LOG.debug("Request to get all Appointments");
-        return appointmentRepository.findAll(pageable).map(appointmentMapper::toDto);
-    }
+@Transactional(readOnly = true)
+public Page<AppointmentDTO> findAll(Pageable pageable) {
+    LOG.debug("Request to get all Appointments");
+    java.util.List<Appointment> all = appointmentRepository.findAllWithRelationships();
+    int start = (int) pageable.getOffset();
+    int end = Math.min(start + pageable.getPageSize(), all.size());
+    java.util.List<Appointment> pageContent = start >= all.size() ?
+        java.util.Collections.emptyList() : all.subList(start, end);
+    return new org.springframework.data.domain.PageImpl<>(pageContent, pageable, all.size())
+        .map(appointmentMapper::toDto);
+}
 
     @Override
     @Transactional(readOnly = true)
@@ -112,40 +116,42 @@ public class AppointmentServiceImpl implements AppointmentService {
     public Optional<AppointmentDTO> updateStatus(Long id, AppointmentStatus status) {
         LOG.debug("Request to update Appointment status : {} to {}", id, status);
         return appointmentRepository.findById(id)
-            .map(appointment -> {
-                appointment.setStatus(status);
-                appointment.setResponseDate(Instant.now());
-                return appointment;
-            })
-            .map(appointmentRepository::save)
-            .map(appointmentMapper::toDto);
+                .map(appointment -> {
+                    appointment.setStatus(status);
+                    appointment.setResponseDate(Instant.now());
+                    return appointment;
+                })
+                .map(appointmentRepository::save)
+                .map(appointmentMapper::toDto);
     }
 
     // Resuelve student, availableSlot y desiredSubjects
     private void resolveRelations(Appointment appointment, AppointmentDTO appointmentDTO) {
         if (appointmentDTO.getStudent() != null && appointmentDTO.getStudent().getId() != null) {
             studentRepository.findById(appointmentDTO.getStudent().getId())
-                .ifPresent(appointment::setStudent);
+                    .ifPresent(appointment::setStudent);
         }
         if (appointmentDTO.getAvailableSlot() != null && appointmentDTO.getAvailableSlot().getId() != null) {
             availableSlotRepository.findById(appointmentDTO.getAvailableSlot().getId())
-                .ifPresent(appointment::setAvailableSlot);
+                    .ifPresent(appointment::setAvailableSlot);
         }
         if (appointmentDTO.getDesiredSubjects() != null) {
             Set<Subject> subjects = new HashSet<>();
             for (SubjectDTO subjectDTO : appointmentDTO.getDesiredSubjects()) {
                 if (subjectDTO.getId() != null) {
                     subjectRepository.findById(subjectDTO.getId())
-                        .ifPresent(subjects::add);
+                            .ifPresent(subjects::add);
                 }
             }
             appointment.setDesiredSubjects(subjects);
         }
     }
 
-    @Override
-    public Page<AppointmentDTO> findAllWithEagerRelationships(Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAllWithEagerRelationships'");
-    }
+   @Override
+@Transactional(readOnly = true)
+public Page<AppointmentDTO> findAllWithEagerRelationships(Pageable pageable) {
+    LOG.debug("Request to get all Appointments with eager relationships");
+    return appointmentRepository.findAllWithEagerRelationships(pageable).map(appointmentMapper::toDto);
+}
+
 }
