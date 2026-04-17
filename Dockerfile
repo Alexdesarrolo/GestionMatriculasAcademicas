@@ -1,16 +1,24 @@
-# Etapa 1: Construcción
+# Etapa 1: Build
 FROM gradle:8.5-jdk21 AS build
 WORKDIR /app
-# Copiamos archivos de configuración primero para aprovechar la caché de Docker
-COPY build.gradle settings.gradle ./
-COPY src ./src
-# Construimos el proyecto saltando los tests para acelerar el despliegue
-RUN gradle build -x test --no-daemon
+COPY . .
+
+# LIMITAMOS LA MEMORIA DE GRADLE PARA QUE NO CRASHEE RENDER
+ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.parallel=false -Xmx256m"
+
+# Damos permisos y ejecutamos el build
+RUN chmod +x gradlew
+RUN ./gradlew clean build -x test --no-daemon
 
 # Etapa 2: Ejecución
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
-# Buscamos el archivo .jar (evitando el que termina en -plain.jar)
+
+# Copiamos solo el JAR ejecutable (excluyendo el plain)
 COPY --from=build /app/build/libs/*[!plain].jar app.jar
+
+# Limitamos la RAM también al ejecutar la app
+ENV JAVA_OPTS="-Xmx300m"
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
