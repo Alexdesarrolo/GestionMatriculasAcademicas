@@ -45,6 +45,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         .csrf(csrf -> csrf.disable())
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
             .requestMatchers("/api/register").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/test-hash").permitAll()
