@@ -48,6 +48,7 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
             .requestMatchers("/api/register").permitAll()
+            .requestMatchers("/error").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/test-hash").permitAll()
             .requestMatchers("/h2-console/**").permitAll()
             .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
