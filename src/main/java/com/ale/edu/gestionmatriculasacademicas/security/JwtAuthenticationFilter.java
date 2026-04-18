@@ -16,7 +16,7 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
+private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private final JwtTokenProvider jwtTokenProvider;
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -31,6 +31,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain) throws ServletException, IOException {
 
         String path = request.getServletPath();
+
+        String requestURI = request.getRequestURI();
+
+        logger.debug("Filter path: {} URI: {}", path, requestURI);
 
         // 🔥 EXCLUIR LOGIN Y REGISTER
         if (path.equals("/api/authenticate") || path.equals("/api/register")) {
