@@ -131,4 +131,11 @@ public class UserService {
                 LOG.debug("Cambió contraseña el usuario: {}", user.getLogin());
             });
     }
+
+    @Transactional(readOnly = true)
+    public Optional<User> findOneByEmailIgnoreCase(String email) {
+        System.out.println("consulta repositorio:::: " + userRepository.findOneByEmailIgnoreCase(email));
+        System.out.println("email:: " + email);
+        return userRepository.findOneByEmailIgnoreCase(email);
+    }
 }
