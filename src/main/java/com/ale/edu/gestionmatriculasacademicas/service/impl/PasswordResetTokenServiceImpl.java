@@ -5,6 +5,7 @@ import com.ale.edu.gestionmatriculasacademicas.domain.User;
 import com.ale.edu.gestionmatriculasacademicas.repository.PasswordResetTokenRepository;
 import com.ale.edu.gestionmatriculasacademicas.repository.UserRepository;
 import com.ale.edu.gestionmatriculasacademicas.service.PasswordResetTokenService;
+import com.ale.edu.gestionmatriculasacademicas.service.moduleemail.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,15 +25,18 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public PasswordResetTokenServiceImpl(
         PasswordResetTokenRepository passwordResetTokenRepository,
         UserRepository userRepository,
-        PasswordEncoder passwordEncoder
+        PasswordEncoder passwordEncoder,
+        EmailService emailService
     ) {
         this.passwordResetTokenRepository = passwordResetTokenRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     @Override
@@ -44,22 +48,35 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
         String token = UUID.randomUUID().toString();
         PasswordResetToken passwordResetToken = new PasswordResetToken();
         passwordResetToken.setUser(user);
-        passwordResetToken.setTokenHash(passwordEncoder.encode(token));
-        passwordResetToken.setExpiresAt(LocalDateTime.now().plusHours(24));
+        passwordResetToken.setTokenHash(token);
+        passwordResetToken.setExpiresAt(LocalDateTime.now().plusMinutes(5));
         passwordResetToken.setUsed(false);
 
         passwordResetTokenRepository.save(passwordResetToken);
+
+        emailService.sendPasswordRecovery(user.getEmail(), token);
         return token;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<User> validateToken(String token) {
-        log.debug("Request to validate password reset token");
-        return passwordResetTokenRepository.findAllByUsedIsFalseAndExpiresAtAfter(LocalDateTime.now()).stream()
-            .filter(t -> passwordEncoder.matches(token, t.getTokenHash()))
-            .map(PasswordResetToken::getUser)
-            .findFirst();
+        System.out.println("token: ::" + token);
+        System.out.println("validando tokenn :: " + passwordEncoder.encode(token));
+        log.debug("Request to validate password reset token "+ passwordEncoder.encode(token));
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByTokenHash(token)
+                .orElseThrow(() -> new RuntimeException("Token inválido"));
+
+        if (resetToken.isExpired() || resetToken.isUsed()) {
+            throw new RuntimeException("Token expirado o ya utilizado");
+        }
+
+        return Optional.of(resetToken.getUser());
+
+//        return passwordResetTokenRepository.findAllByUsedIsFalseAndExpiresAtAfter(LocalDateTime.now()).stream()
+//            .filter(t -> passwordEncoder.matches(token, t.getTokenHash()))
+//            .map(PasswordResetToken::getUser)
+//            .findFirst().orElse("Token expirado o ya utilizado");
     }
 
     @Override
