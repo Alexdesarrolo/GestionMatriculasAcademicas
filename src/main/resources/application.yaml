@@ -26,8 +26,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: alexinge.g@gmail.com
-    password:
+    username: ddagmaaralejandra@gmail.com
+    password: xlgr jfik msbg jitm
     properties:
       mail:
         smtp:
@@ -52,4 +52,4 @@ cors:
 
 app:
   frontend:
-    url: https://localhost:8081
+    url: https://frontend-matriculas.onrender.com

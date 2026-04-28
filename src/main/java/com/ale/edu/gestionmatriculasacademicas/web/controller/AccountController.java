@@ -56,13 +56,17 @@ public class AccountController {
     }
 
     @PostMapping("/account/reset-password/finish")
-    public ResponseEntity<Void> finishPasswordReset(@Valid @RequestBody KeyAndPasswordDTO keyAndPassword) {
-        return passwordResetTokenService.validateToken(keyAndPassword.getKey())
-            .map(user -> {
-                passwordResetTokenService.completePasswordReset(keyAndPassword.getNewPassword(), user, keyAndPassword.getKey());
-                return ResponseEntity.ok().<Void>build();
-            })
-            .orElse(ResponseEntity.badRequest().build());
+    public ResponseEntity<Object> finishPasswordReset(@Valid @RequestBody KeyAndPasswordDTO keyAndPassword) {
+        try {
+            return passwordResetTokenService.validateToken(keyAndPassword.getKey())
+                .map(user -> {
+                    passwordResetTokenService.completePasswordReset(keyAndPassword.getNewPassword(), user, keyAndPassword.getKey());
+                    return ResponseEntity.ok().build();
+                })
+                .orElse(ResponseEntity.badRequest().build());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 
