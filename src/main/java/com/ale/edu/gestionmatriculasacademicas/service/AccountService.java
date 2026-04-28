@@ -38,6 +38,6 @@ public class AccountService {
     }
 
     public void changePassword(String currentPassword, String newPassword) {
-        userService.changePassword(currentPassword, passwordEncoder.encode(newPassword));
+        userService.changePassword(currentPassword, newPassword);
     }
 }

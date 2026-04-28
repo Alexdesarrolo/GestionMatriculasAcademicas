@@ -4,6 +4,10 @@ import com.ale.edu.gestionmatriculasacademicas.service.AccountService;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.LoginDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.PasswordChangeDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.TokenDTO;
+import com.ale.edu.gestionmatriculasacademicas.service.UserService;
+import com.ale.edu.gestionmatriculasacademicas.service.PasswordResetTokenService;
+import com.ale.edu.gestionmatriculasacademicas.service.dto.KeyAndPasswordDTO;
+import com.ale.edu.gestionmatriculasacademicas.domain.User;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +22,14 @@ public class AccountController {
 
     private final PasswordEncoder passwordEncoder;
 
-    public AccountController(AccountService accountService, PasswordEncoder passwordEncoder) {
+    private final UserService userService;
+    private final PasswordResetTokenService passwordResetTokenService;
+
+    public AccountController(AccountService accountService, PasswordEncoder passwordEncoder, UserService userService, PasswordResetTokenService passwordResetTokenService) {
         this.accountService = accountService;
         this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
+        this.passwordResetTokenService = passwordResetTokenService;
     }
 
     @PostMapping("/authenticate")
@@ -33,6 +42,31 @@ public class AccountController {
     public ResponseEntity<Void> changePassword(@Valid @RequestBody PasswordChangeDTO dto) {
         accountService.changePassword(dto.getCurrentPassword(), dto.getNewPassword());
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/account/reset-password/init")
+    public ResponseEntity<String> requestPasswordReset(@RequestBody String mail) {
+        return userService.findOneByEmailIgnoreCase(mail)
+            .map(user -> {
+                String token = passwordResetTokenService.createToken(user);
+                // In a real app, send mail here. For now, return token.
+                return ResponseEntity.ok(token);
+            })
+            .orElse(ResponseEntity.badRequest().build());
+    }
+
+    @PostMapping("/account/reset-password/finish")
+    public ResponseEntity<Object> finishPasswordReset(@Valid @RequestBody KeyAndPasswordDTO keyAndPassword) {
+        try {
+            return passwordResetTokenService.validateToken(keyAndPassword.getKey())
+                .map(user -> {
+                    passwordResetTokenService.completePasswordReset(keyAndPassword.getNewPassword(), user, keyAndPassword.getKey());
+                    return ResponseEntity.ok().build();
+                })
+                .orElse(ResponseEntity.badRequest().build());
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 

@@ -11,7 +11,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/maticulas_academicas
     username: postgres
-    password: postgres
+    password: 1234
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -22,6 +22,18 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ddagmaaralejandra@gmail.com
+    password: xlgr jfik msbg jitm
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
   # H2 para pruebas locales rápidas (cambia datasource arriba por este)
   # datasource:
@@ -37,3 +49,7 @@ jwt:
 
 cors:
   allowed-origins: "http://localhost:4200,https://frontend-matriculas.onrender.com"
+
+app:
+  frontend:
+    url: https://frontend-matriculas.onrender.com
