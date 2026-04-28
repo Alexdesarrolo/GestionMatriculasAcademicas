@@ -13,7 +13,7 @@ public class PasswordChangeDTO {
     private String currentPassword;
 
     @NotBlank
-    @Size(min = 8, max = 50)
+    @Size(min = 8, max = 15)
     private String newPassword;
 
     public PasswordChangeDTO() {}
