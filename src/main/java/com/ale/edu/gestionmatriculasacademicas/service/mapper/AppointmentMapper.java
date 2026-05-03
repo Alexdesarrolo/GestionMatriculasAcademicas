@@ -12,16 +12,16 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.mapstruct.*;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { EnrollmentMapper.class })
 public interface AppointmentMapper extends EntityMapper<AppointmentDTO, Appointment> {
 
     @Mapping(target = "student", source = "student", qualifiedByName = "studentId")
     @Mapping(target = "availableSlot", source = "availableSlot", qualifiedByName = "availableSlotId")
-    @Mapping(target = "desiredSubjects", source = "desiredSubjects", qualifiedByName = "subjectNameSet")
+    @Mapping(target = "enrollments", source = "enrollments")
     AppointmentDTO toDto(Appointment s);
 
-    @Mapping(target = "removeDesiredSubjects", ignore = true)
-    @Mapping(target = "desiredSubjects", ignore = true)
+    @Mapping(target = "removeEnrollment", ignore = true)
+    @Mapping(target = "enrollments", ignore = true)
     @Mapping(target = "student", ignore = true)
     @Mapping(target = "availableSlot", ignore = true)
     Appointment toEntity(AppointmentDTO appointmentDTO);
@@ -31,8 +31,8 @@ public interface AppointmentMapper extends EntityMapper<AppointmentDTO, Appointm
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "student", ignore = true)
     @Mapping(target = "availableSlot", ignore = true)
-    @Mapping(target = "removeDesiredSubjects", ignore = true)
-    @Mapping(target = "desiredSubjects", ignore = true)
+    @Mapping(target = "removeEnrollment", ignore = true)
+    @Mapping(target = "enrollments", ignore = true)
     void partialUpdate(@MappingTarget Appointment entity, AppointmentDTO dto);
 
     @Named("studentId")
@@ -54,17 +54,4 @@ public interface AppointmentMapper extends EntityMapper<AppointmentDTO, Appointm
     @Mapping(target = "bookedSpots", source = "bookedSpots")
     @Mapping(target = "active", source = "active")
     AvailableSlotDTO toDtoAvailableSlotId(AvailableSlot availableSlot);
-
-    @Named("subjectName")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "name", source = "name")
-    @Mapping(target = "code", source = "code")
-    @Mapping(target = "credits", source = "credits")
-    SubjectDTO toDtoSubjectName(Subject subject);
-
-    @Named("subjectNameSet")
-    default Set<SubjectDTO> toDtoSubjectNameSet(Set<Subject> subject) {
-        return subject.stream().map(this::toDtoSubjectName).collect(Collectors.toSet());
-    }
 }

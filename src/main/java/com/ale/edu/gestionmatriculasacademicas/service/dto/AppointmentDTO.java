@@ -36,7 +36,7 @@ public class AppointmentDTO implements Serializable {
 
     private AvailableSlotDTO availableSlot;
 
-    private Set<SubjectDTO> desiredSubjects = new HashSet<>();
+    private Set<EnrollmentDTO> enrollments = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -110,12 +110,12 @@ public class AppointmentDTO implements Serializable {
         this.availableSlot = availableSlot;
     }
 
-    public Set<SubjectDTO> getDesiredSubjects() {
-        return desiredSubjects;
+    public Set<EnrollmentDTO> getEnrollments() {
+        return enrollments;
     }
 
-    public void setDesiredSubjects(Set<SubjectDTO> desiredSubjects) {
-        this.desiredSubjects = desiredSubjects;
+    public void setEnrollments(Set<EnrollmentDTO> enrollments) {
+        this.enrollments = enrollments;
     }
 
     @Override
@@ -152,7 +152,7 @@ public class AppointmentDTO implements Serializable {
             ", notes='" + getNotes() + "'" +
             ", student=" + getStudent() +
             ", availableSlot=" + getAvailableSlot() +
-            ", desiredSubjects=" + getDesiredSubjects() +
+            ", enrollments=" + getEnrollments() +
             "}";
     }
 }

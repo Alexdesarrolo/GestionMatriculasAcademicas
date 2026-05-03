@@ -1,10 +1,12 @@
 package com.ale.edu.gestionmatriculasacademicas.service;
 
-import com.ale.edu.gestionmatriculasacademicas.domain.enumeration.AppointmentStatus;
-import com.ale.edu.gestionmatriculasacademicas.service.dto.AppointmentDTO;
 import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import com.ale.edu.gestionmatriculasacademicas.domain.enumeration.AppointmentStatus;
+import com.ale.edu.gestionmatriculasacademicas.service.dto.AppointmentDTO;
 
 /**
  * Service Interface for managing {@link com.ale.edu.gestionmatriculasacademicas.domain.Appointment}.
@@ -62,4 +64,12 @@ public interface AppointmentService {
     Page<AppointmentDTO> findByStudent(Long studentId, Pageable pageable);
 
     Optional<AppointmentDTO> updateStatus(Long id, AppointmentStatus status);
+
+    /**
+     * Cancel the "id" appointment.
+     *
+     * @param id the id of the entity.
+     * @return the cancelled entity.
+     */
+    Optional<AppointmentDTO> cancel(Long id);
 }

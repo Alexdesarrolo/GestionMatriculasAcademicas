@@ -26,7 +26,10 @@ public class SubjectServiceImpl implements SubjectService {
 
     private final SubjectMapper subjectMapper;
 
-    public SubjectServiceImpl(SubjectRepository subjectRepository, SubjectMapper subjectMapper) {
+    public SubjectServiceImpl(
+        SubjectRepository subjectRepository,
+        SubjectMapper subjectMapper
+    ) {
         this.subjectRepository = subjectRepository;
         this.subjectMapper = subjectMapper;
     }
@@ -55,7 +58,6 @@ public class SubjectServiceImpl implements SubjectService {
             .findById(subjectDTO.getId())
             .map(existingSubject -> {
                 subjectMapper.partialUpdate(existingSubject, subjectDTO);
-
                 return existingSubject;
             })
             .map(subjectRepository::save)
@@ -76,9 +78,9 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-@Transactional(readOnly = true)
-public Page<SubjectDTO> findAll(Pageable pageable) {
-    LOG.debug("Request to get all Subjects");
-    return subjectRepository.findAll(pageable).map(subjectMapper::toDto);
-}
+    @Transactional(readOnly = true)
+    public Page<SubjectDTO> findAll(Pageable pageable) {
+        LOG.debug("Request to get all Subjects");
+        return subjectRepository.findAll(pageable).map(subjectMapper::toDto);
+    }
 }

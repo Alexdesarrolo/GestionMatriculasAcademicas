@@ -1,9 +1,7 @@
 package com.ale.edu.gestionmatriculasacademicas.service.mapper;
 
-import com.ale.edu.gestionmatriculasacademicas.domain.Appointment;
 import com.ale.edu.gestionmatriculasacademicas.domain.Program;
 import com.ale.edu.gestionmatriculasacademicas.domain.Subject;
-import com.ale.edu.gestionmatriculasacademicas.service.dto.AppointmentDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.ProgramDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.SubjectDTO;
 import java.util.Set;
@@ -14,23 +12,17 @@ import org.mapstruct.*;
 public interface SubjectMapper extends EntityMapper<SubjectDTO, Subject> {
 
     @Mapping(target = "programs", source = "programs", qualifiedByName = "programNameSet")
-    @Mapping(target = "appointments", source = "appointments", qualifiedByName = "appointmentIdSet")
     SubjectDTO toDto(Subject s);
 
     @Mapping(target = "programs", ignore = true)
     @Mapping(target = "removePrograms", ignore = true)
-    @Mapping(target = "appointments", ignore = true)
-    @Mapping(target = "removeAppointments", ignore = true)
     Subject toEntity(SubjectDTO subjectDTO);
 
-    // Agrega esto para el partialUpdate
     @Override
     @Named("partialUpdate")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "programs", ignore = true)
     @Mapping(target = "removePrograms", ignore = true)
-    @Mapping(target = "appointments", ignore = true)
-    @Mapping(target = "removeAppointments", ignore = true)
     void partialUpdate(@MappingTarget Subject entity, SubjectDTO dto);
 
     @Named("programName")
@@ -42,15 +34,5 @@ public interface SubjectMapper extends EntityMapper<SubjectDTO, Subject> {
     @Named("programNameSet")
     default Set<ProgramDTO> toDtoProgramNameSet(Set<Program> program) {
         return program.stream().map(this::toDtoProgramName).collect(Collectors.toSet());
-    }
-
-    @Named("appointmentId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    AppointmentDTO toDtoAppointmentId(Appointment appointment);
-
-    @Named("appointmentIdSet")
-    default Set<AppointmentDTO> toDtoAppointmentIdSet(Set<Appointment> appointment) {
-        return appointment.stream().map(this::toDtoAppointmentId).collect(Collectors.toSet());
     }
 }

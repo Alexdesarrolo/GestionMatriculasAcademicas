@@ -42,13 +42,6 @@ public class Subject implements Serializable {
     @JsonIgnoreProperties(value = { "subjects" }, allowSetters = true)
     private Set<Program> programs = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "desiredSubjects")
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "student", "availableSlot", "desiredSubjects" }, allowSetters = true)
-    private Set<Appointment> appointments = new HashSet<>();
-
-    // jhipster-needle-entity-add-field - JHipster will add fields here
-
     public Long getId() {
         return this.id;
     }
@@ -132,39 +125,6 @@ public class Subject implements Serializable {
         return this;
     }
 
-    public Set<Appointment> getAppointments() {
-        return this.appointments;
-    }
-
-    public void setAppointments(Set<Appointment> appointments) {
-        if (this.appointments != null) {
-            this.appointments.forEach(i -> i.removeDesiredSubjects(this));
-        }
-        if (appointments != null) {
-            appointments.forEach(i -> i.addDesiredSubjects(this));
-        }
-        this.appointments = appointments;
-    }
-
-    public Subject appointments(Set<Appointment> appointments) {
-        this.setAppointments(appointments);
-        return this;
-    }
-
-    public Subject addAppointments(Appointment appointment) {
-        this.appointments.add(appointment);
-        appointment.getDesiredSubjects().add(this);
-        return this;
-    }
-
-    public Subject removeAppointments(Appointment appointment) {
-        this.appointments.remove(appointment);
-        appointment.getDesiredSubjects().remove(this);
-        return this;
-    }
-
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -178,7 +138,6 @@ public class Subject implements Serializable {
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 

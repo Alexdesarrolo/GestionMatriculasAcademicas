@@ -24,7 +24,7 @@ public class AppointmentRepositoryWithBagRelationshipsImpl implements Appointmen
 
     @Override
     public Optional<Appointment> fetchBagRelationships(Optional<Appointment> appointment) {
-        return appointment.map(this::fetchDesiredSubjects);
+        return appointment.map(this::fetchEnrollments);
     }
 
     @Override
@@ -38,25 +38,25 @@ public class AppointmentRepositoryWithBagRelationshipsImpl implements Appointmen
 
     @Override
     public List<Appointment> fetchBagRelationships(List<Appointment> appointments) {
-        return Optional.of(appointments).map(this::fetchDesiredSubjects).orElse(Collections.emptyList());
+        return Optional.of(appointments).map(this::fetchEnrollments).orElse(Collections.emptyList());
     }
 
-    Appointment fetchDesiredSubjects(Appointment result) {
+    Appointment fetchEnrollments(Appointment result) {
         return entityManager
             .createQuery(
-                "select appointment from Appointment appointment left join fetch appointment.desiredSubjects where appointment.id = :id",
+                "select appointment from Appointment appointment left join fetch appointment.enrollments where appointment.id = :id",
                 Appointment.class
             )
             .setParameter(ID_PARAMETER, result.getId())
             .getSingleResult();
     }
 
-    List<Appointment> fetchDesiredSubjects(List<Appointment> appointments) {
+    List<Appointment> fetchEnrollments(List<Appointment> appointments) {
         HashMap<Object, Integer> order = new HashMap<>();
         IntStream.range(0, appointments.size()).forEach(index -> order.put(appointments.get(index).getId(), index));
         List<Appointment> result = entityManager
             .createQuery(
-                "select appointment from Appointment appointment left join fetch appointment.desiredSubjects where appointment in :appointments",
+                "select appointment from Appointment appointment left join fetch appointment.enrollments where appointment in :appointments",
                 Appointment.class
             )
             .setParameter(APPOINTMENTS_PARAMETER, appointments)

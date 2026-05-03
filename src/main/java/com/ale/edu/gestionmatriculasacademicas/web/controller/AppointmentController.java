@@ -1,5 +1,27 @@
 package com.ale.edu.gestionmatriculasacademicas.web.controller;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.ale.edu.gestionmatriculasacademicas.repository.AppointmentRepository;
 import com.ale.edu.gestionmatriculasacademicas.service.AppointmentService;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.AppointmentDTO;
@@ -7,17 +29,6 @@ import com.ale.edu.gestionmatriculasacademicas.web.controller.errors.BadRequestE
 import com.ale.edu.gestionmatriculasacademicas.web.controller.errors.ResourceNotFoundException;
 
 import jakarta.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -126,6 +137,18 @@ public class AppointmentController {
         }
         appointmentDTO.setId(id);
         return appointmentService.updateStatus(id, appointmentDTO.getStatus())
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    // PATCH /api/appointments/{id}/cancel
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<AppointmentDTO> cancelAppointment(@PathVariable Long id) {
+        LOG.debug("REST request to cancel Appointment : {}", id);
+        if (!appointmentRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Cita no encontrada con id: " + id);
+        }
+        return appointmentService.cancel(id)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }

@@ -1,13 +1,17 @@
 package com.ale.edu.gestionmatriculasacademicas.repository;
 
-import com.ale.edu.gestionmatriculasacademicas.domain.Appointment;
-
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import com.ale.edu.gestionmatriculasacademicas.domain.Appointment;
 
 /**
  * Spring Data JPA repository for the Appointment entity.
@@ -29,6 +33,9 @@ public interface AppointmentRepository
     }
 
     Page<Appointment> findByStudentId(Long studentId, Pageable pageable);
+
+    @Query("SELECT a FROM Appointment a WHERE a.student.id = :studentId AND a.status != 'CANCELLED'")
+    List<Appointment> findActiveAppointmentsByStudentId(@Param("studentId") Long studentId);
 
     @Query(value = "SELECT a FROM Appointment a LEFT JOIN FETCH a.student LEFT JOIN FETCH a.availableSlot",
        countQuery = "SELECT COUNT(a) FROM Appointment a")

@@ -50,23 +50,18 @@ public class Appointment implements Serializable {
     @Column(name = "notes")
     private String notes;
 
-   @ManyToOne(fetch = FetchType.EAGER)
-@JsonIgnoreProperties(value = { "user", "program" }, allowSetters = true)
-private Student student;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties(value = { "user", "program" }, allowSetters = true)
+    private Student student;
 
-@ManyToOne(fetch = FetchType.EAGER)
-@JsonIgnoreProperties(value = { "program" }, allowSetters = true)
-private AvailableSlot availableSlot;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties(value = { "program" }, allowSetters = true)
+    private AvailableSlot availableSlot;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "rel_appointment__desired_subjects",
-        joinColumns = @JoinColumn(name = "appointment_id"),
-        inverseJoinColumns = @JoinColumn(name = "desired_subjects_id")
-    )
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnoreProperties(value = { "programs", "appointments" }, allowSetters = true)
-    private Set<Subject> desiredSubjects = new HashSet<>();
+    @JsonIgnoreProperties(value = { "appointment", "student", "subjectOffering" }, allowSetters = true)
+    private Set<Enrollment> enrollments = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -187,26 +182,34 @@ private AvailableSlot availableSlot;
         return this;
     }
 
-    public Set<Subject> getDesiredSubjects() {
-        return this.desiredSubjects;
+    public Set<Enrollment> getEnrollments() {
+        return this.enrollments;
     }
 
-    public void setDesiredSubjects(Set<Subject> subjects) {
-        this.desiredSubjects = subjects;
+    public void setEnrollments(Set<Enrollment> enrollments) {
+        if (this.enrollments != null) {
+            this.enrollments.forEach(i -> i.setAppointment(null));
+        }
+        if (enrollments != null) {
+            enrollments.forEach(i -> i.setAppointment(this));
+        }
+        this.enrollments = enrollments;
     }
 
-    public Appointment desiredSubjects(Set<Subject> subjects) {
-        this.setDesiredSubjects(subjects);
+    public Appointment enrollments(Set<Enrollment> enrollments) {
+        this.setEnrollments(enrollments);
         return this;
     }
 
-    public Appointment addDesiredSubjects(Subject subject) {
-        this.desiredSubjects.add(subject);
+    public Appointment addEnrollment(Enrollment enrollment) {
+        this.enrollments.add(enrollment);
+        enrollment.setAppointment(this);
         return this;
     }
 
-    public Appointment removeDesiredSubjects(Subject subject) {
-        this.desiredSubjects.remove(subject);
+    public Appointment removeEnrollment(Enrollment enrollment) {
+        this.enrollments.remove(enrollment);
+        enrollment.setAppointment(null);
         return this;
     }
 

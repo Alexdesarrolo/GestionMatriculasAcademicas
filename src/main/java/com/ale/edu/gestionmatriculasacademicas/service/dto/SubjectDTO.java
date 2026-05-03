@@ -24,8 +24,6 @@ public class SubjectDTO implements Serializable {
 
     private Set<ProgramDTO> programs = new HashSet<>();
 
-    private Set<AppointmentDTO> appointments = new HashSet<>();
-
     public Long getId() {
         return id;
     }
@@ -66,14 +64,6 @@ public class SubjectDTO implements Serializable {
         this.programs = programs;
     }
 
-    public Set<AppointmentDTO> getAppointments() {
-        return appointments;
-    }
-
-    public void setAppointments(Set<AppointmentDTO> appointments) {
-        this.appointments = appointments;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -104,7 +94,6 @@ public class SubjectDTO implements Serializable {
             ", code='" + getCode() + "'" +
             ", credits=" + getCredits() +
             ", programs=" + getPrograms() +
-            ", appointments=" + getAppointments() +
             "}";
     }
 }

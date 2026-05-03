@@ -38,7 +38,7 @@ public class AppointmentHistory implements Serializable {
     private String notes;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "student", "availableSlot", "desiredSubjects" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "student", "availableSlot", "enrollments" }, allowSetters = true)
     private Appointment appointment;
 
     @ManyToOne(fetch = FetchType.LAZY)
