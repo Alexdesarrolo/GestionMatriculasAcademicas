@@ -2,6 +2,7 @@ package com.ale.edu.gestionmatriculasacademicas.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,6 +20,11 @@ public class JwtTokenProvider {
 
     @Value("${jwt.expiration}")
     private long jwtExpiration;
+
+    @PostConstruct
+    public void init() {
+        System.out.println("JWT_SECRET length: " + (jwtSecret != null ? jwtSecret.length() : "null") + " ::: " + jwtSecret);
+    }
 
     public String generateToken(Authentication authentication) {
     Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
