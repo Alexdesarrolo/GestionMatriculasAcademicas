@@ -57,4 +57,6 @@ public interface StudentService {
     void delete(Long id);
 
     Page<StudentDTO> findAll(Pageable pageable);
+
+    Optional<StudentDTO> findOneByUserLogin(String login);
 }

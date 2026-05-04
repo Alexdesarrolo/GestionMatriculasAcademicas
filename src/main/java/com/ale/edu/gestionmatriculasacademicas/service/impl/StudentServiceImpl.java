@@ -106,4 +106,10 @@ public class StudentServiceImpl implements StudentService {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'findAllWithEagerRelationships'");
     }
+
+    @Override
+    public Optional<StudentDTO> findOneByUserLogin(String login) {
+        LOG.debug("Request to get Student by login : {}", login);
+      return studentRepository.findByUserLogin(login).map(studentMapper::toDto);
+    }
 }

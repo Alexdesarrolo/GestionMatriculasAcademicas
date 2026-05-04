@@ -112,16 +112,22 @@ public class StudentController {
     }
 
     @GetMapping("/me")
-public ResponseEntity<StudentDTO> getMyProfile() {
-    String login = SecurityUtils.getCurrentUserLogin()
-        .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+    public ResponseEntity<StudentDTO> getMyProfile() {
+        LOG.debug("REST request to get current Student profile");
+        String login = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> {
+                LOG.error("No user login found in security context");
+                return new ResourceNotFoundException("Usuario no autenticado");
+            });
 
-    return studentService.findAll(PageRequest.of(0, 1000))
-        .getContent()
-        .stream()
-        .filter(s -> s.getUser() != null && login.equals(s.getUser().getLogin()))
-        .findFirst()
-        .map(ResponseEntity::ok)
-        .orElse(ResponseEntity.notFound().build());
-}
+        return studentService.findOneByUserLogin(login)
+            .map(student -> {
+                LOG.debug("Student found for login {}: {}", login, student.getId());
+                return ResponseEntity.ok(student);
+            })
+            .orElseGet(() -> {
+                LOG.error("No student record found for user login: {}", login);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            });
+    }
 }
