@@ -3,10 +3,14 @@ package com.ale.edu.gestionmatriculasacademicas.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
+
 
 import java.security.Key;
 import java.util.Date;
@@ -14,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
+    private static final Logger log = LoggerFactory.getLogger(JwtTokenProvider.class);
 
     @Value("${jwt.secret}")
     private String jwtSecret;
@@ -23,7 +28,8 @@ public class JwtTokenProvider {
 
     @PostConstruct
     public void init() {
-        System.out.println("JWT_SECRET length: " + (jwtSecret != null ? jwtSecret.length() : "null") + " ::: " + jwtSecret);
+        
+        log.info("JWT_SECRET length: {} ::: {}", (jwtSecret != null ? jwtSecret.length() : "null"), jwtSecret);
     }
 
     public String generateToken(Authentication authentication) {
