@@ -30,6 +30,8 @@ public class JwtTokenProvider {
     public void init() {
         
         log.info("JWT_SECRET length: {} ::: {}", (jwtSecret != null ? jwtSecret.length() : "null"), jwtSecret);
+        log.error("JWT_SECRET length: {}", jwtSecret != null ? jwtSecret.length() : "null");
+        log.error("JWT_SECRET::: {}", jwtSecret);
     }
 
     public String generateToken(Authentication authentication) {

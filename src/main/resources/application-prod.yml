@@ -1,3 +1,9 @@
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    com.tu.paquete: DEBUG
+
 spring:
   datasource:
     url: ${DB_URL}
