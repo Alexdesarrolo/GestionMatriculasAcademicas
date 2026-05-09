@@ -1,18 +1,22 @@
 package com.ale.edu.gestionmatriculasacademicas.web.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.ale.edu.gestionmatriculasacademicas.service.AccountService;
+import com.ale.edu.gestionmatriculasacademicas.service.PasswordResetTokenService;
+import com.ale.edu.gestionmatriculasacademicas.service.UserService;
+import com.ale.edu.gestionmatriculasacademicas.service.dto.KeyAndPasswordDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.LoginDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.PasswordChangeDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.TokenDTO;
-import com.ale.edu.gestionmatriculasacademicas.service.UserService;
-import com.ale.edu.gestionmatriculasacademicas.service.PasswordResetTokenService;
-import com.ale.edu.gestionmatriculasacademicas.service.dto.KeyAndPasswordDTO;
-import com.ale.edu.gestionmatriculasacademicas.domain.User;
 
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -48,7 +52,7 @@ public class AccountController {
     public ResponseEntity<String> requestPasswordReset(@RequestBody String mail) {
         return userService.findOneByEmailIgnoreCase(mail)
             .map(user -> {
-                String token = passwordResetTokenService.createToken(user);
+                String token = passwordResetTokenService.createTokenAndSendEmail(user);
                 // In a real app, send mail here. For now, return token.
                 return ResponseEntity.ok(token);
             })

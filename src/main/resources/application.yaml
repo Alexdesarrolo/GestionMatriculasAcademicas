@@ -52,4 +52,4 @@ cors:
 
 app:
   frontend:
-    url: https://frontend-matriculas.onrender.com
+    url: gestionmatriculas-dfehemcmfhb9ekaj.mexicocentral-01.azurewebsites.net

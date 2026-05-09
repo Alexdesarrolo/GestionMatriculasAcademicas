@@ -1,20 +1,21 @@
 package com.ale.edu.gestionmatriculasacademicas.service.impl;
 
-import com.ale.edu.gestionmatriculasacademicas.domain.PasswordResetToken;
-import com.ale.edu.gestionmatriculasacademicas.domain.User;
-import com.ale.edu.gestionmatriculasacademicas.repository.PasswordResetTokenRepository;
-import com.ale.edu.gestionmatriculasacademicas.repository.UserRepository;
-import com.ale.edu.gestionmatriculasacademicas.service.PasswordResetTokenService;
-import com.ale.edu.gestionmatriculasacademicas.service.moduleemail.EmailService;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-import java.util.UUID;
+import com.ale.edu.gestionmatriculasacademicas.domain.PasswordResetToken;
+import com.ale.edu.gestionmatriculasacademicas.domain.User;
+import com.ale.edu.gestionmatriculasacademicas.repository.PasswordResetTokenRepository;
+import com.ale.edu.gestionmatriculasacademicas.repository.UserRepository;
+import com.ale.edu.gestionmatriculasacademicas.service.PasswordResetTokenService;
+import com.ale.edu.gestionmatriculasacademicas.service.moduleemail.EmailService;
 
 @Service
 @Transactional
@@ -40,7 +41,7 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
     }
 
     @Override
-    public String createToken(User user) {
+    public String createTokenAndSendEmail(User user) {
         log.debug("Request to create password reset token for user: {}", user.getLogin());
         // Invalidate old tokens for this user
         passwordResetTokenRepository.deleteByUser(user);
