@@ -12,6 +12,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -38,6 +40,7 @@ public class StudentController {
     // POST /api/students
     @PostMapping
     public ResponseEntity<StudentDTO> createStudent(@Valid @RequestBody StudentDTO studentDTO) throws URISyntaxException {
+        
         LOG.debug("REST request to save Student : {}", studentDTO);
         if (studentDTO.getId() != null) {
             throw new BadRequestException("Un nuevo estudiante no puede tener ID");
@@ -86,8 +89,8 @@ public class StudentController {
     // GET /api/students
     @GetMapping
     public ResponseEntity<List<StudentDTO>> getAllStudents(Pageable pageable) {
-        LOG.debug("REST request to get all Students");
-        Page<StudentDTO> page = studentService.findAll(pageable);
+        LOG.debug("REST request to get all Students with eager relationships");
+        Page<StudentDTO> page = studentService.findAllWithEagerRelationships(pageable);
         return ResponseEntity.ok(page.getContent());
     }
 

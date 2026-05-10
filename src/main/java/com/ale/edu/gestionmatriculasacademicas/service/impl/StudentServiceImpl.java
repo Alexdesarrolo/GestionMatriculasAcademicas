@@ -102,9 +102,10 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<StudentDTO> findAllWithEagerRelationships(Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAllWithEagerRelationships'");
+        LOG.debug("Request to get all Students with eager relationships");
+        return studentRepository.findAllWithEagerRelationships(pageable).map(studentMapper::toDto);
     }
 
     @Override

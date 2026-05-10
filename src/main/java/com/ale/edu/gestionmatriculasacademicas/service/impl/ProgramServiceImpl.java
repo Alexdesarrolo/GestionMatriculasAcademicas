@@ -106,8 +106,9 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<ProgramDTO> findAllWithEagerRelationships(Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAllWithEagerRelationships'");
+        LOG.debug("Request to get all Programs with eager relationships");
+        return programRepository.findAllWithEagerRelationships(pageable).map(programMapper::toDto);
     }
 }

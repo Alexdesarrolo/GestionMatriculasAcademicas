@@ -32,6 +32,8 @@ public class AdminUserDTO implements Serializable {
 
     private boolean activated = false;
 
+    private boolean mustChangePassword = false;
+
     @Size(min = 2, max = 10)
     private String langKey;
 
@@ -43,7 +45,7 @@ public class AdminUserDTO implements Serializable {
     private Set<String> authorities;
 
     // Solo se usa al crear usuario, no se devuelve en respuestas
-    @Size(min = 8, max = 50)
+//@Size(min = 8, max = 50)
     private String password;
 
     public AdminUserDTO() {}
@@ -55,6 +57,7 @@ public class AdminUserDTO implements Serializable {
         this.lastName = user.getLastName();
         this.email = user.getEmail();
         this.activated = user.isActivated();
+        this.mustChangePassword = user.isMustChangePassword();
         this.imageUrl = user.getImageUrl();
         this.langKey = user.getLangKey();
         this.createdBy = user.getCreatedBy();
@@ -85,6 +88,9 @@ public class AdminUserDTO implements Serializable {
 
     public boolean isActivated() { return activated; }
     public void setActivated(boolean activated) { this.activated = activated; }
+
+    public boolean isMustChangePassword() { return mustChangePassword; }
+    public void setMustChangePassword(boolean mustChangePassword) { this.mustChangePassword = mustChangePassword; }
 
     public String getLangKey() { return langKey; }
     public void setLangKey(String langKey) { this.langKey = langKey; }

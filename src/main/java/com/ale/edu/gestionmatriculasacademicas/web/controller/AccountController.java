@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ale.edu.gestionmatriculasacademicas.service.AccountService;
+import com.ale.edu.gestionmatriculasacademicas.domain.User;
 import com.ale.edu.gestionmatriculasacademicas.service.PasswordResetTokenService;
 import com.ale.edu.gestionmatriculasacademicas.service.UserService;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.KeyAndPasswordDTO;
@@ -39,7 +40,10 @@ public class AccountController {
     @PostMapping("/authenticate")
     public ResponseEntity<TokenDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         String token = accountService.login(loginDTO.getUsername(), loginDTO.getPassword());
-        return ResponseEntity.ok(new TokenDTO(token));
+        boolean mustChangePassword = userService.getUserWithAuthoritiesByLogin(loginDTO.getUsername())
+            .map(User::isMustChangePassword)
+            .orElse(false);
+        return ResponseEntity.ok(new TokenDTO(token, mustChangePassword));
     }
 
     @PostMapping("/account/change-password")

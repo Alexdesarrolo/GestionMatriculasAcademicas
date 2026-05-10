@@ -71,22 +71,22 @@ public class SubjectOfferingServiceImpl implements SubjectOfferingService {
     @Override
     @Transactional(readOnly = true)
     public Page<SubjectOfferingDTO> findAll(Pageable pageable) {
-        LOG.debug("Request to get all SubjectOfferings");
-        return subjectOfferingRepository.findAll(pageable).map(this::enrichDto);
+        LOG.debug("Request to get all SubjectOfferings with eager relationships");
+        return subjectOfferingRepository.findAllWithEagerRelationships(pageable).map(this::enrichDto);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SubjectOfferingDTO> findAll() {
-        LOG.debug("Request to get all SubjectOfferings");
-        return subjectOfferingRepository.findAll().stream().map(this::enrichDto).collect(Collectors.toList());
+        LOG.debug("Request to get all SubjectOfferings with eager relationships");
+        return subjectOfferingRepository.findAllWithEagerRelationships().stream().map(this::enrichDto).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<SubjectOfferingDTO> findOne(Long id) {
-        LOG.debug("Request to get SubjectOffering : {}", id);
-        return subjectOfferingRepository.findById(id).map(this::enrichDto);
+        LOG.debug("Request to get SubjectOffering with eager relationships : {}", id);
+        return subjectOfferingRepository.findOneWithEagerRelationships(id).map(this::enrichDto);
     }
 
     private SubjectOfferingDTO enrichDto(SubjectOffering subjectOffering) {

@@ -84,8 +84,8 @@ public class ProgramController {
     // GET /api/programs
     @GetMapping
     public ResponseEntity<List<ProgramDTO>> getAllPrograms(Pageable pageable) {
-        LOG.debug("REST request to get all Programs");
-        Page<ProgramDTO> page = programService.findAll(pageable);
+        LOG.debug("REST request to get all Programs with eager relationships");
+        Page<ProgramDTO> page = programService.findAllWithEagerRelationships(pageable);
         return ResponseEntity.ok(page.getContent());
     }
 
