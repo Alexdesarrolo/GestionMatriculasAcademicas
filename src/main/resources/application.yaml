@@ -1,6 +1,7 @@
 logging:
   level:
-    org.springframework.security: DEBUG
+    root: INFO
+    org.springframework.security: INFO
 
 spring:
   application:
@@ -48,8 +49,8 @@ jwt:
   expiration: 86400000 # 24 horas
 
 cors:
-  allowed-origins: "http://localhost:4200,https://frontend-matriculas.onrender.com"
+  allowed-origins: http://localhost:4200
 
 app:
   frontend:
-    url: https://wonderful-mushroom-06749de10.7.azurestaticapps.net
+    url: https://frontend-matriculas.onrender.com

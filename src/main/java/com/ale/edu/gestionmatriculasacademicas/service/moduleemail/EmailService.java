@@ -1,11 +1,12 @@
 package com.ale.edu.gestionmatriculasacademicas.service.moduleemail;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 //@RequiredArgsConstructor
@@ -95,8 +96,6 @@ public class EmailService {
     }
 
     private String wrapHtml(String contenido) {
-        String logoBase64 = "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHZpZXdCb3g9IjAgMCAyNCAyNCIgc3Ryb2tlLXdpZHRoPSIyIj48cGF0aCBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGQ9Ik0xMiA2LjI1M3YxM20wLTEzQzEwLjgzMiA1LjQ3NyA5LjI0NiA1IDcuNSA1UzQuMTY4IDUuNDc3IDMgNi4yNTN2MTNDNC4xNjggMTguNDc3IDUuNzU0IDE4IDcuNSAxOHMzLjMzMi40NzcgNC41IDEuMjUzbTAtMTNDMTMuMTY4IDUuNDc3IDE0Ljc1NCA1IDE2LjUgNWMxLjc0NyAwIDMuMzMyLjQ3NyA0LjUgMS4yNTN2MTNDMTkuODMyIDE4LjQ3NyAxOC4yNDcgMTggMTYuNSAxOGMtMS43NDYgMC0zLjMzMi40NzctNC41IDEuMjUzIi8+PC9zdmc+";
-        
         return """
             <!DOCTYPE html>
             <html>
@@ -108,6 +107,8 @@ public class EmailService {
                     .header { text-align: center; padding: 32px 20px; border-bottom: 1px solid #F1F5F9; }
                     .content { padding: 40px; }
                     .footer { padding: 24px; background: #F8FAFC; text-align: center; font-size: 12px; color: #94A3B8; border-top: 1px solid #F1F5F9; }
+                    .logo-container { display: inline-block; background-color: #2563EB; padding: 6px; border-radius: 4px; }
+                    .logo-svg { width: 20px; height: 20px; display: block; }
                 </style>
             </head>
             <body>
@@ -115,8 +116,10 @@ public class EmailService {
                     <div class="header">
                         <table align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
                             <tr>
-                                <td style="background-color: #2563EB; padding: 6px; border-radius: 4px; width: 32px; height: 32px; text-align: center; vertical-align: middle;">
-                                    <img src="data:image/svg+xml;base64,%s" width="20" height="20" style="display: block; margin: 0 auto;">
+                                <td style="background-color: #2563EB; padding: 4px; border-radius: 8px; width: 32px; height: 32px; text-align: center; vertical-align: middle;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" style="display: block;">
+                                        <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                    </svg>
                                 </td>
                                 <td style="padding-left: 10px;">
                                     <span style="font-size: 22px; font-weight: bold; color: #0F172A; font-family: monospace;">Matricula<span style="color: #2563EB;">+</span></span>
@@ -125,7 +128,7 @@ public class EmailService {
                         </table>
                     </div>
                     <div class="content">
-                        %s
+        """ + contenido + """
                     </div>
                     <div class="footer">
                         &copy; 2026 Matricula+. Sistema de Gestión Académica.<br>
@@ -134,7 +137,7 @@ public class EmailService {
                 </div>
             </body>
             </html>
-        """.formatted(logoBase64, contenido);
+        """;
     }
 
 }
