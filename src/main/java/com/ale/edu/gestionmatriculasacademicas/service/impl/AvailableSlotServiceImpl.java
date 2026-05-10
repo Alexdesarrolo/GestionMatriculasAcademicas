@@ -1,18 +1,20 @@
 package com.ale.edu.gestionmatriculasacademicas.service.impl;
 
-import com.ale.edu.gestionmatriculasacademicas.domain.AvailableSlot;
-import com.ale.edu.gestionmatriculasacademicas.repository.AvailableSlotRepository;
-import com.ale.edu.gestionmatriculasacademicas.repository.ProgramRepository;
-import com.ale.edu.gestionmatriculasacademicas.service.AvailableSlotService;
-import com.ale.edu.gestionmatriculasacademicas.service.dto.AvailableSlotDTO;
-import com.ale.edu.gestionmatriculasacademicas.service.mapper.AvailableSlotMapper;
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.ale.edu.gestionmatriculasacademicas.domain.AvailableSlot;
+import com.ale.edu.gestionmatriculasacademicas.repository.AvailableSlotRepository;
+import com.ale.edu.gestionmatriculasacademicas.repository.ProgramRepository;
+import com.ale.edu.gestionmatriculasacademicas.service.AvailableSlotService;
+import com.ale.edu.gestionmatriculasacademicas.service.dto.AvailableSlotDTO;
+import com.ale.edu.gestionmatriculasacademicas.service.mapper.AvailableSlotMapper;
 
 @Service
 @Transactional
@@ -23,15 +25,18 @@ public class AvailableSlotServiceImpl implements AvailableSlotService {
     private final AvailableSlotRepository availableSlotRepository;
     private final AvailableSlotMapper availableSlotMapper;
     private final ProgramRepository programRepository;
+    private final com.ale.edu.gestionmatriculasacademicas.repository.UserRepository userRepository;
 
     public AvailableSlotServiceImpl(
         AvailableSlotRepository availableSlotRepository,
         AvailableSlotMapper availableSlotMapper,
         ProgramRepository programRepository
+        , com.ale.edu.gestionmatriculasacademicas.repository.UserRepository userRepository
     ) {
         this.availableSlotRepository = availableSlotRepository;
         this.availableSlotMapper = availableSlotMapper;
         this.programRepository = programRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -89,6 +94,16 @@ public class AvailableSlotServiceImpl implements AvailableSlotService {
         if (availableSlotDTO.getProgram() != null && availableSlotDTO.getProgram().getId() != null) {
             programRepository.findById(availableSlotDTO.getProgram().getId())
                 .ifPresent(availableSlot::setProgram);
+        }
+        // resolve advisors set from DTO
+        if (availableSlotDTO.getAdvisors() != null) {
+            java.util.Set<com.ale.edu.gestionmatriculasacademicas.domain.User> advisors = new java.util.HashSet<>();
+            for (com.ale.edu.gestionmatriculasacademicas.service.dto.UserDTO u : availableSlotDTO.getAdvisors()) {
+                if (u != null && u.getId() != null) {
+                    userRepository.findById(u.getId()).ifPresent(advisors::add);
+                }
+            }
+            availableSlot.setAdvisors(advisors);
         }
     }
 }

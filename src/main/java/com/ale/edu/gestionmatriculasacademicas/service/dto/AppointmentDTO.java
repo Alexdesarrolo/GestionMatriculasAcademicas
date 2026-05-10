@@ -1,13 +1,15 @@
 package com.ale.edu.gestionmatriculasacademicas.service.dto;
 
-import com.ale.edu.gestionmatriculasacademicas.domain.enumeration.AppointmentStatus;
-import jakarta.persistence.Lob;
-import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import com.ale.edu.gestionmatriculasacademicas.domain.enumeration.AppointmentStatus;
+
+import jakarta.persistence.Lob;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * A DTO for the {@link com.ale.edu.gestionmatriculasacademicas.domain.Appointment} entity.
@@ -37,6 +39,7 @@ public class AppointmentDTO implements Serializable {
     private AvailableSlotDTO availableSlot;
 
     private Set<EnrollmentDTO> enrollments = new HashSet<>();
+    private UserDTO advisor;
 
     public Long getId() {
         return id;
@@ -116,6 +119,14 @@ public class AppointmentDTO implements Serializable {
 
     public void setEnrollments(Set<EnrollmentDTO> enrollments) {
         this.enrollments = enrollments;
+    }
+
+    public UserDTO getAdvisor() {
+        return advisor;
+    }
+
+    public void setAdvisor(UserDTO advisor) {
+        this.advisor = advisor;
     }
 
     @Override

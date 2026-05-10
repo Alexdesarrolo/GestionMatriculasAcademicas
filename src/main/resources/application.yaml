@@ -49,8 +49,8 @@ jwt:
   expiration: 86400000 # 24 horas
 
 cors:
-  allowed-origins: http://localhost:4200
+  allowed-origins: http://localhost:4200,https://wonderful-mushroom-06749de10.7.azurestaticapps.net
 
 app:
   frontend:
-    url: https://frontend-matriculas.onrender.com
+    url: https://wonderful-mushroom-06749de10.7.azurestaticapps.net

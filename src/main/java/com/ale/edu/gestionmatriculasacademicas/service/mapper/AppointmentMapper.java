@@ -1,29 +1,33 @@
 package com.ale.edu.gestionmatriculasacademicas.service.mapper;
 
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+
 import com.ale.edu.gestionmatriculasacademicas.domain.Appointment;
 import com.ale.edu.gestionmatriculasacademicas.domain.AvailableSlot;
 import com.ale.edu.gestionmatriculasacademicas.domain.Student;
-import com.ale.edu.gestionmatriculasacademicas.domain.Subject;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.AppointmentDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.AvailableSlotDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.StudentDTO;
-import com.ale.edu.gestionmatriculasacademicas.service.dto.SubjectDTO;
-import java.util.Set;
-import java.util.stream.Collectors;
-import org.mapstruct.*;
 
-@Mapper(componentModel = "spring", uses = { EnrollmentMapper.class })
+@Mapper(componentModel = "spring", uses = { EnrollmentMapper.class, UserMapper.class })
 public interface AppointmentMapper extends EntityMapper<AppointmentDTO, Appointment> {
 
     @Mapping(target = "student", source = "student", qualifiedByName = "studentId")
     @Mapping(target = "availableSlot", source = "availableSlot", qualifiedByName = "availableSlotId")
     @Mapping(target = "enrollments", source = "enrollments")
+    @Mapping(target = "advisor", source = "advisor", qualifiedByName = "login")
     AppointmentDTO toDto(Appointment s);
 
     @Mapping(target = "removeEnrollment", ignore = true)
     @Mapping(target = "enrollments", ignore = true)
     @Mapping(target = "student", ignore = true)
     @Mapping(target = "availableSlot", ignore = true)
+    @Mapping(target = "advisor", source = "advisor.id", qualifiedByName = "id")
     Appointment toEntity(AppointmentDTO appointmentDTO);
 
     @Override
@@ -49,9 +53,9 @@ public interface AppointmentMapper extends EntityMapper<AppointmentDTO, Appointm
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     @Mapping(target = "startTime", source = "startTime")
-    @Mapping(target = "endTime", source = "endTime")
     @Mapping(target = "availableSpots", source = "availableSpots")
     @Mapping(target = "bookedSpots", source = "bookedSpots")
     @Mapping(target = "active", source = "active")
+    @Mapping(target = "advisors", source = "advisors", qualifiedByName = "loginSet")
     AvailableSlotDTO toDtoAvailableSlotId(AvailableSlot availableSlot);
 }

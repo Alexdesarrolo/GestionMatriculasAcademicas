@@ -1,15 +1,31 @@
 package com.ale.edu.gestionmatriculasacademicas.domain;
 
-import com.ale.edu.gestionmatriculasacademicas.domain.enumeration.AppointmentStatus;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import com.ale.edu.gestionmatriculasacademicas.domain.enumeration.AppointmentStatus;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * A Appointment.
@@ -62,6 +78,10 @@ public class Appointment implements Serializable {
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "appointment", "student", "subjectOffering" }, allowSetters = true)
     private Set<Enrollment> enrollments = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonIgnoreProperties(value = { "authorities", "imageUrl" }, allowSetters = true)
+    private User advisor;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -214,6 +234,19 @@ public class Appointment implements Serializable {
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+
+    public User getAdvisor() {
+        return this.advisor;
+    }
+
+    public void setAdvisor(User advisor) {
+        this.advisor = advisor;
+    }
+
+    public Appointment advisor(User advisor) {
+        this.setAdvisor(advisor);
+        return this;
+    }
 
     @Override
     public boolean equals(Object o) {

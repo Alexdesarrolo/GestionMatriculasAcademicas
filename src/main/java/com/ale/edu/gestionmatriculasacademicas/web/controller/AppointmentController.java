@@ -125,6 +125,17 @@ public class AppointmentController {
         return ResponseEntity.ok(page.getContent());
     }
 
+    // GET /api/appointments/advisor/{advisorId}
+    @GetMapping("/advisor/{advisorId}")
+    public ResponseEntity<List<AppointmentDTO>> getAppointmentsByAdvisor(
+        @PathVariable Long advisorId,
+        Pageable pageable
+    ) {
+        LOG.debug("REST request to get Appointments by advisor : {}", advisorId);
+        Page<AppointmentDTO> page = appointmentService.findByAdvisor(advisorId, pageable);
+        return ResponseEntity.ok(page.getContent());
+    }
+
     // PATCH /api/appointments/{id}/status
     @PatchMapping("/{id}/status")
     public ResponseEntity<AppointmentDTO> updateStatus(

@@ -41,6 +41,8 @@ public interface AppointmentRepository
        countQuery = "SELECT COUNT(a) FROM Appointment a")
 List<Appointment> findAllWithRelationships();
 
+    @Query("SELECT COUNT(a) FROM Appointment a WHERE a.availableSlot.id = :slotId AND a.advisor.id = :advisorId")
+    long countByAvailableSlotIdAndAdvisorId(@Param("slotId") Long slotId, @Param("advisorId") Long advisorId);
 
-
+    Page<Appointment> findByAdvisorId(Long advisorId, Pageable pageable);
 }

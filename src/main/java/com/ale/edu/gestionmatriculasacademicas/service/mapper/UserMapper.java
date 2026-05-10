@@ -1,15 +1,21 @@
 package com.ale.edu.gestionmatriculasacademicas.service.mapper;
 
-import com.ale.edu.gestionmatriculasacademicas.domain.Authority;
-import com.ale.edu.gestionmatriculasacademicas.domain.User;
-import com.ale.edu.gestionmatriculasacademicas.service.dto.AdminUserDTO;
-import com.ale.edu.gestionmatriculasacademicas.service.dto.UserDTO;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.springframework.stereotype.Service;
+
+import com.ale.edu.gestionmatriculasacademicas.domain.Authority;
+import com.ale.edu.gestionmatriculasacademicas.domain.User;
+import com.ale.edu.gestionmatriculasacademicas.service.dto.AdminUserDTO;
+import com.ale.edu.gestionmatriculasacademicas.service.dto.UserDTO;
 
 /**
  * Mapper for the entity {@link User} and its DTO called {@link UserDTO}.
@@ -25,6 +31,9 @@ public class UserMapper {
     }
 
     public UserDTO userToUserDTO(User user) {
+        if (user == null) {
+            return null;
+        }
         return new UserDTO(user);
     }
 
@@ -33,6 +42,9 @@ public class UserMapper {
     }
 
     public AdminUserDTO userToAdminUserDTO(User user) {
+        if (user == null) {
+            return null;
+        }
         return new AdminUserDTO(user);
     }
 
@@ -80,6 +92,7 @@ public class UserMapper {
         return authorities;
     }
 
+    @Named("id")
     public User userFromId(Long id) {
         if (id == null) {
             return null;
@@ -89,7 +102,7 @@ public class UserMapper {
         return user;
     }
 
-    @Named("id")
+    @Named("toDtoId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     public UserDTO toDtoId(User user) {
@@ -100,6 +113,8 @@ public class UserMapper {
         userDto.setId(user.getId());
         return userDto;
     }
+
+    
 
     @Named("idSet")
     @BeanMapping(ignoreByDefault = true)
@@ -131,6 +146,8 @@ public class UserMapper {
         return userDto;
     }
 
+    
+
     @Named("loginSet")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
@@ -143,6 +160,30 @@ public class UserMapper {
         Set<UserDTO> userSet = new HashSet<>();
         for (User userEntity : users) {
             userSet.add(this.toDtoLogin(userEntity));
+        }
+
+        return userSet;
+    }
+
+    @Named("fullSet")
+    @BeanMapping(ignoreByDefault = true)
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "login", source = "login")
+    @Mapping(target = "firstName", source = "firstName")
+    @Mapping(target = "lastName", source = "lastName")
+    public Set<UserDTO> toDtoFullSet(Set<User> users) {
+        if (users == null) {
+            return Collections.emptySet();
+        }
+
+        Set<UserDTO> userSet = new HashSet<>();
+        for (User userEntity : users) {
+            UserDTO dto = new UserDTO();
+            dto.setId(userEntity.getId());
+            dto.setLogin(userEntity.getLogin());
+            dto.setFirstName(userEntity.getFirstName());
+            dto.setLastName(userEntity.getLastName());
+            userSet.add(dto);
         }
 
         return userSet;

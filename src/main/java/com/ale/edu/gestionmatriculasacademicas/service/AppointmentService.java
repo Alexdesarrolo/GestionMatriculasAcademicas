@@ -63,6 +63,8 @@ public interface AppointmentService {
 
     Page<AppointmentDTO> findByStudent(Long studentId, Pageable pageable);
 
+    Page<AppointmentDTO> findByAdvisor(Long advisorId, Pageable pageable);
+
     Optional<AppointmentDTO> updateStatus(Long id, AppointmentStatus status);
 
     /**

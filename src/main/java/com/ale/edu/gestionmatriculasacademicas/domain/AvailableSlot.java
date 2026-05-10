@@ -1,12 +1,26 @@
 package com.ale.edu.gestionmatriculasacademicas.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
+
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * A AvailableSlot.
@@ -29,9 +43,7 @@ public class AvailableSlot implements Serializable {
     @Column(name = "start_time", nullable = false)
     private ZonedDateTime startTime;
 
-    @NotNull
-    @Column(name = "end_time", nullable = false)
-    private ZonedDateTime endTime;
+    // endTime removed: slot duration is fixed to 30 minutes
 
     @NotNull
     @Column(name = "available_spots", nullable = false)
@@ -46,6 +58,14 @@ public class AvailableSlot implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "subjects" }, allowSetters = true)
     private Program program;
+
+    @ManyToMany
+    @JoinTable(
+        name = "available_slot_advisors",
+        joinColumns = @JoinColumn(name = "available_slot_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
+    )
+    private java.util.Set<User> advisors = new java.util.HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -75,18 +95,7 @@ public class AvailableSlot implements Serializable {
         this.startTime = startTime;
     }
 
-    public ZonedDateTime getEndTime() {
-        return this.endTime;
-    }
-
-    public AvailableSlot endTime(ZonedDateTime endTime) {
-        this.setEndTime(endTime);
-        return this;
-    }
-
-    public void setEndTime(ZonedDateTime endTime) {
-        this.endTime = endTime;
-    }
+    // endTime removed: duration fixed to 30 minutes
 
     public Integer getAvailableSpots() {
         return this.availableSpots;
@@ -140,6 +149,12 @@ public class AvailableSlot implements Serializable {
         return this;
     }
 
+    public java.util.Set<User> getAdvisors() { return this.advisors; }
+
+    public void setAdvisors(java.util.Set<User> advisors) { this.advisors = advisors; }
+
+    public AvailableSlot advisors(java.util.Set<User> advisors) { this.setAdvisors(advisors); return this; }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -165,7 +180,6 @@ public class AvailableSlot implements Serializable {
         return "AvailableSlot{" +
             "id=" + getId() +
             ", startTime='" + getStartTime() + "'" +
-            ", endTime='" + getEndTime() + "'" +
             ", availableSpots=" + getAvailableSpots() +
             ", bookedSpots=" + getBookedSpots() +
             ", active='" + getActive() + "'" +

@@ -1,11 +1,16 @@
 package com.ale.edu.gestionmatriculasacademicas.service.dto;
 
 
-import com.ale.edu.gestionmatriculasacademicas.domain.User;
-import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.ale.edu.gestionmatriculasacademicas.domain.User;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class AdminUserDTO implements Serializable {
 
@@ -51,6 +56,9 @@ public class AdminUserDTO implements Serializable {
     public AdminUserDTO() {}
 
     public AdminUserDTO(User user) {
+        if (user == null) {
+            return;
+        }
         this.id = user.getId();
         this.login = user.getLogin();
         this.firstName = user.getFirstName();
@@ -64,8 +72,10 @@ public class AdminUserDTO implements Serializable {
         this.createdDate = user.getCreatedDate();
         this.lastModifiedBy = user.getLastModifiedBy();
         this.lastModifiedDate = user.getLastModifiedDate();
-        // descomentado para mapear roles
-        //this.authorities = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
+        // Mapear roles si existen
+        if (user.getAuthorities() != null) {
+            this.authorities = user.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toSet());
+        }
     }
 
     public Long getId() { return id; }

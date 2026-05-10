@@ -22,6 +22,7 @@ import com.ale.edu.gestionmatriculasacademicas.repository.AvailableSlotRepositor
 import com.ale.edu.gestionmatriculasacademicas.repository.EnrollmentRepository;
 import com.ale.edu.gestionmatriculasacademicas.repository.StudentRepository;
 import com.ale.edu.gestionmatriculasacademicas.repository.SubjectOfferingRepository;
+import com.ale.edu.gestionmatriculasacademicas.repository.UserRepository;
 import com.ale.edu.gestionmatriculasacademicas.service.AppointmentService;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.AppointmentDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.EnrollmentDTO;
@@ -40,6 +41,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final AvailableSlotRepository availableSlotRepository;
     private final SubjectOfferingRepository subjectOfferingRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final UserRepository userRepository;
 
     public AppointmentServiceImpl(
             AppointmentRepository appointmentRepository,
@@ -47,13 +49,15 @@ public class AppointmentServiceImpl implements AppointmentService {
             StudentRepository studentRepository,
             AvailableSlotRepository availableSlotRepository,
             SubjectOfferingRepository subjectOfferingRepository,
-            EnrollmentRepository enrollmentRepository) {
+            EnrollmentRepository enrollmentRepository,
+            UserRepository userRepository) {
         this.appointmentRepository = appointmentRepository;
         this.appointmentMapper = appointmentMapper;
         this.studentRepository = studentRepository;
         this.availableSlotRepository = availableSlotRepository;
         this.subjectOfferingRepository = subjectOfferingRepository;
         this.enrollmentRepository = enrollmentRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -62,6 +66,16 @@ public class AppointmentServiceImpl implements AppointmentService {
         validateAppointment(appointmentDTO);
         Appointment appointment = appointmentMapper.toEntity(appointmentDTO);
         resolveRelations(appointment, appointmentDTO);
+        // If advisor not provided, try to assign one from the available slot's advisors
+        if (appointment.getAdvisor() == null && appointment.getAvailableSlot() != null) {
+            com.ale.edu.gestionmatriculasacademicas.domain.AvailableSlot slot = appointment.getAvailableSlot();
+            if (slot.getAdvisors() != null && !slot.getAdvisors().isEmpty()) {
+                com.ale.edu.gestionmatriculasacademicas.domain.User pick = pickAdvisorForSlot(slot);
+                if (pick != null) {
+                    appointment.setAdvisor(pick);
+                }
+            }
+        }
         appointment = appointmentRepository.save(appointment);
         return appointmentMapper.toDto(appointment);
     }
@@ -165,6 +179,13 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<AppointmentDTO> findByAdvisor(Long advisorId, Pageable pageable) {
+        LOG.debug("Request to get Appointments by advisor : {}", advisorId);
+        return appointmentRepository.findByAdvisorId(advisorId, pageable).map(appointmentMapper::toDto);
+    }
+
+    @Override
     public Optional<AppointmentDTO> updateStatus(Long id, AppointmentStatus status) {
         LOG.debug("Request to update Appointment status : {} to {}", id, status);
         return appointmentRepository.findById(id)
@@ -217,6 +238,24 @@ public class AppointmentServiceImpl implements AppointmentService {
             }
             appointment.setEnrollments(enrollments);
         }
+        if (appointmentDTO.getAdvisor() != null && appointmentDTO.getAdvisor().getId() != null) {
+            userRepository.findById(appointmentDTO.getAdvisor().getId())
+                .ifPresent(appointment::setAdvisor);
+        }
+    }
+
+    private com.ale.edu.gestionmatriculasacademicas.domain.User pickAdvisorForSlot(com.ale.edu.gestionmatriculasacademicas.domain.AvailableSlot slot) {
+        // choose advisor with fewest assigned appointments in this slot
+        com.ale.edu.gestionmatriculasacademicas.domain.User chosen = null;
+        long min = Long.MAX_VALUE;
+        for (com.ale.edu.gestionmatriculasacademicas.domain.User adv : slot.getAdvisors()) {
+            long cnt = appointmentRepository.countByAvailableSlotIdAndAdvisorId(slot.getId(), adv.getId());
+            if (cnt < min) {
+                min = cnt;
+                chosen = adv;
+            }
+        }
+        return chosen;
     }
 
     @Override

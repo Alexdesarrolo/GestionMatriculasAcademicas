@@ -1,8 +1,9 @@
 package com.ale.edu.gestionmatriculasacademicas.service.dto;
 
-import com.ale.edu.gestionmatriculasacademicas.domain.User;
 import java.io.Serializable;
 import java.util.Objects;
+
+import com.ale.edu.gestionmatriculasacademicas.domain.User;
 
 /**
  * A DTO representing a user, with only the public attributes.
@@ -14,15 +15,22 @@ public class UserDTO implements Serializable {
     private Long id;
 
     private String login;
+    private String firstName;
+    private String lastName;
 
     public UserDTO() {
         // Empty constructor needed for Jackson.
     }
 
     public UserDTO(User user) {
+        if (user == null) {
+            return;
+        }
         this.id = user.getId();
         // Customize it here if you need, or not, firstName/lastName/etc
         this.login = user.getLogin();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
     }
 
     public Long getId() {
@@ -39,6 +47,22 @@ public class UserDTO implements Serializable {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     @Override

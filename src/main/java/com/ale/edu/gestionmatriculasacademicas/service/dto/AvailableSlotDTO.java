@@ -1,9 +1,10 @@
 package com.ale.edu.gestionmatriculasacademicas.service.dto;
 
-import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+
+import jakarta.validation.constraints.NotNull;
 
 /**
  * A DTO for the {@link com.ale.edu.gestionmatriculasacademicas.domain.AvailableSlot} entity.
@@ -16,8 +17,7 @@ public class AvailableSlotDTO implements Serializable {
     @NotNull
     private ZonedDateTime startTime;
 
-    @NotNull
-    private ZonedDateTime endTime;
+    // endTime removed: slot duration is fixed to 30 minutes
 
     @NotNull
     private Integer availableSpots;
@@ -27,6 +27,7 @@ public class AvailableSlotDTO implements Serializable {
     private Boolean active;
 
     private ProgramDTO program;
+    private java.util.Set<com.ale.edu.gestionmatriculasacademicas.service.dto.UserDTO> advisors;
 
     public Long getId() {
         return id;
@@ -44,12 +45,14 @@ public class AvailableSlotDTO implements Serializable {
         this.startTime = startTime;
     }
 
-    public ZonedDateTime getEndTime() {
-        return endTime;
+    // endTime removed: use startTime and fixed duration
+
+    public java.util.Set<com.ale.edu.gestionmatriculasacademicas.service.dto.UserDTO> getAdvisors() {
+        return advisors;
     }
 
-    public void setEndTime(ZonedDateTime endTime) {
-        this.endTime = endTime;
+    public void setAdvisors(java.util.Set<com.ale.edu.gestionmatriculasacademicas.service.dto.UserDTO> advisors) {
+        this.advisors = advisors;
     }
 
     public Integer getAvailableSpots() {
@@ -111,7 +114,7 @@ public class AvailableSlotDTO implements Serializable {
         return "AvailableSlotDTO{" +
             "id=" + getId() +
             ", startTime='" + getStartTime() + "'" +
-            ", endTime='" + getEndTime() + "'" +
+            ", endTime removed" +
             ", availableSpots=" + getAvailableSpots() +
             ", bookedSpots=" + getBookedSpots() +
             ", active='" + getActive() + "'" +
