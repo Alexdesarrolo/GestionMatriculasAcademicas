@@ -12,6 +12,7 @@ import com.ale.edu.gestionmatriculasacademicas.service.AccountService;
 import com.ale.edu.gestionmatriculasacademicas.domain.User;
 import com.ale.edu.gestionmatriculasacademicas.service.PasswordResetTokenService;
 import com.ale.edu.gestionmatriculasacademicas.service.UserService;
+import com.ale.edu.gestionmatriculasacademicas.service.dto.AdminUserDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.KeyAndPasswordDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.LoginDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.PasswordChangeDTO;
@@ -44,6 +45,24 @@ public class AccountController {
             .map(User::isMustChangePassword)
             .orElse(false);
         return ResponseEntity.ok(new TokenDTO(token, mustChangePassword));
+    }
+
+    @GetMapping("/account")
+    public AdminUserDTO getAccount() {
+        return userService.getUserWithAuthorities()
+            .map(AdminUserDTO::new)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    @PostMapping("/account")
+    public void saveAccount(@Valid @RequestBody AdminUserDTO userDTO) {
+        userService.updateUserAccount(
+            userDTO.getFirstName(),
+            userDTO.getLastName(),
+            userDTO.getEmail(),
+            userDTO.getLangKey(),
+            userDTO.getImageUrl()
+        );
     }
 
     @PostMapping("/account/change-password")
