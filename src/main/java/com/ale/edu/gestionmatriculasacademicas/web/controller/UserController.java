@@ -38,7 +38,10 @@ public class UserController {
     // POST /api/admin/users
     @PostMapping("/users")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<User> createUser(@Valid @RequestBody AdminUserDTO userDTO) throws URISyntaxException {
+    public ResponseEntity<AdminUserDTO> createUser(
+        @Valid @RequestBody AdminUserDTO userDTO,
+        @RequestParam(defaultValue = "true") boolean sendEmail
+    ) throws URISyntaxException {
         LOG.debug("REST request to save User : {}", userDTO);
 
         if (userDTO.getId() != null) {
@@ -51,10 +54,15 @@ public class UserController {
             throw new BadRequestException("El email ya está en uso");
         }
 
-        User newUser = userService.createUser(userDTO);
+        User newUser = userService.createUser(userDTO, sendEmail);
+        AdminUserDTO responseDTO = new AdminUserDTO(newUser);
+        if (!sendEmail) {
+            responseDTO.setPassword(userDTO.getPassword());
+        }
+
         return ResponseEntity
             .created(new URI("/api/admin/users/" + newUser.getLogin()))
-            .body(newUser);
+            .body(responseDTO);
     }
 
     // PUT /api/admin/users/{login}

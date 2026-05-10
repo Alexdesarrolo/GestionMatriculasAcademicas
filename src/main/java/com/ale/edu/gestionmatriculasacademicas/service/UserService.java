@@ -47,7 +47,7 @@ public class UserService {
     }
 
     // Crear usuario desde el panel admin
-    public User createUser(AdminUserDTO userDTO) {
+    public User createUser(AdminUserDTO userDTO, boolean sendEmail) {
         User user = new User();
         String password = generarCadenaAleatoria();
         userDTO.setPassword(password);
@@ -74,7 +74,12 @@ public class UserService {
             user.setAuthorities(authorities);
         }
 
-        emailService.sendCredentials(user.getEmail(), password, user.getLogin());
+        if (sendEmail) {
+            emailService.sendCredentials(user.getEmail(), password, user.getLogin());
+        } else {
+            // Save the clear password in the DTO so the controller can return it
+            userDTO.setPassword(password);
+        }
 
         userRepository.save(user);
         LOG.debug("Creado usuario: {}", user.getLogin());
