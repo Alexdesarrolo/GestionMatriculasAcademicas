@@ -1,6 +1,7 @@
 package com.ale.edu.gestionmatriculasacademicas.service.impl;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -83,7 +84,10 @@ public class AppointmentServiceImpl implements AppointmentService {
     private void validateAppointment(AppointmentDTO appointmentDTO) {
         // Validar que el estudiante no tenga citas activas
         if (appointmentDTO.getStudent() != null && appointmentDTO.getStudent().getId() != null) {
-            List<Appointment> activeAppointments = appointmentRepository.findActiveAppointmentsByStudentId(appointmentDTO.getStudent().getId());
+            List<Appointment> activeAppointments = appointmentRepository.findByStudentIdAndStatusIn(
+                appointmentDTO.getStudent().getId(), 
+                Arrays.asList(AppointmentStatus.PENDING, AppointmentStatus.RESCHEDULED)
+            );
             if (!activeAppointments.isEmpty()) {
                 throw new BadRequestException("Ya tienes una cita activa. No puedes programar más de una cita a la vez.");
             }

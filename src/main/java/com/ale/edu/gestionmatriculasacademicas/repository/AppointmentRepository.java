@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.ale.edu.gestionmatriculasacademicas.domain.Appointment;
+import com.ale.edu.gestionmatriculasacademicas.domain.enumeration.AppointmentStatus;
 
 /**
  * Spring Data JPA repository for the Appointment entity.
@@ -34,8 +35,7 @@ public interface AppointmentRepository
 
     Page<Appointment> findByStudentId(Long studentId, Pageable pageable);
 
-    @Query("SELECT a FROM Appointment a WHERE a.student.id = :studentId AND a.status IN ('PENDING', 'RESCHEDULED')")
-    List<Appointment> findActiveAppointmentsByStudentId(@Param("studentId") Long studentId);
+    List<Appointment> findByStudentIdAndStatusIn(Long studentId, List<AppointmentStatus> statuses);
 
     @Query(value = "SELECT a FROM Appointment a LEFT JOIN FETCH a.student LEFT JOIN FETCH a.availableSlot",
        countQuery = "SELECT COUNT(a) FROM Appointment a")
