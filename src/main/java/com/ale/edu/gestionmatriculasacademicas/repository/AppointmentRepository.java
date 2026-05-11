@@ -34,7 +34,7 @@ public interface AppointmentRepository
 
     Page<Appointment> findByStudentId(Long studentId, Pageable pageable);
 
-    @Query("SELECT a FROM Appointment a WHERE a.student.id = :studentId AND a.status != 'CANCELLED'")
+    @Query("SELECT a FROM Appointment a WHERE a.student.id = :studentId AND a.status IN ('PENDING', 'RESCHEDULED')")
     List<Appointment> findActiveAppointmentsByStudentId(@Param("studentId") Long studentId);
 
     @Query(value = "SELECT a FROM Appointment a LEFT JOIN FETCH a.student LEFT JOIN FETCH a.availableSlot",
