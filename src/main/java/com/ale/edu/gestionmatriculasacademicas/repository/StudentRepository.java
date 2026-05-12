@@ -40,4 +40,10 @@ public interface StudentRepository extends JpaRepository<Student, Long>, JpaSpec
 
     @Query("select student from Student student join fetch student.user where student.user.login = :login")
     Optional<Student> findByUserLogin(@Param("login") String login);
+
+    boolean existsByStudentCode(String studentCode);
+
+    boolean existsByNationalId(String nationalId);
+
+    long countByStudentCodeStartingWith(String prefix);
 }

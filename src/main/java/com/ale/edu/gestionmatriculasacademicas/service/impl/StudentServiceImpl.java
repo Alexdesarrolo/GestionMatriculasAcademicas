@@ -43,6 +43,17 @@ public class StudentServiceImpl implements StudentService {
         LOG.debug("Request to save Student : {}", studentDTO);
         Student student = studentMapper.toEntity(studentDTO);
         resolveRelations(student, studentDTO);
+        
+        // Generar código estudiantil automáticamente
+        if (student.getId() == null && student.getProgram() != null) {
+            String currentYear = String.valueOf(java.time.Year.now().getValue());
+            String programCode = student.getProgram().getCodePrefix() != null ? student.getProgram().getCodePrefix() : "GEN";
+            String prefix = currentYear + "-" + programCode + "-";
+            long count = studentRepository.countByStudentCodeStartingWith(prefix);
+            String sequence = String.format("%04d", count + 1);
+            student.setStudentCode(prefix + sequence);
+        }
+        
         student = studentRepository.save(student);
         return studentMapper.toDto(student);
     }

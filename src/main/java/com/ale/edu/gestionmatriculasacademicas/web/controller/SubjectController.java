@@ -40,6 +40,12 @@ public class SubjectController {
         if (subjectDTO.getId() != null) {
             throw new BadRequestException("Un nuevo subject no puede tener ID");
         }
+        if (subjectRepository.existsByNameIgnoreCase(subjectDTO.getName())) {
+            throw new BadRequestException("La materia con el nombre '" + subjectDTO.getName() + "' ya se encuentra registrada.");
+        }
+        if (subjectRepository.existsByCode(subjectDTO.getCode())) {
+            throw new BadRequestException("La materia con el código '" + subjectDTO.getCode() + "' ya se encuentra registrada.");
+        }
         SubjectDTO result = subjectService.save(subjectDTO);
         return ResponseEntity
             .created(new URI("/api/subjects/" + result.getId()))

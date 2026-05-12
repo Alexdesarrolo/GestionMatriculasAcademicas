@@ -45,6 +45,12 @@ public class StudentController {
         if (studentDTO.getId() != null) {
             throw new BadRequestException("Un nuevo estudiante no puede tener ID");
         }
+        if (studentDTO.getProgram() == null || studentDTO.getProgram().getId() == null) {
+            throw new BadRequestException("El programa académico es obligatorio para registrar un estudiante.");
+        }
+        if (studentRepository.existsByNationalId(studentDTO.getNationalId())) {
+            throw new BadRequestException("La identificación '" + studentDTO.getNationalId() + "' ya se encuentra registrada.");
+        }
         StudentDTO result = studentService.save(studentDTO);
         return ResponseEntity
             .created(new URI("/api/students/" + result.getId()))
