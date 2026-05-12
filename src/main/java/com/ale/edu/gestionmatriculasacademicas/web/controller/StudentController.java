@@ -43,12 +43,15 @@ public class StudentController {
         
         LOG.debug("REST request to save Student : {}", studentDTO);
         if (studentDTO.getId() != null) {
+            LOG.error("Intento de crear estudiante con ID existente: {}", studentDTO.getId());
             throw new BadRequestException("Un nuevo estudiante no puede tener ID");
         }
         if (studentDTO.getProgram() == null || studentDTO.getProgram().getId() == null) {
+            LOG.error("Programa académico no enviado en la petición");
             throw new BadRequestException("El programa académico es obligatorio para registrar un estudiante.");
         }
         if (studentRepository.existsByNationalId(studentDTO.getNationalId())) {
+            LOG.error("La identificación '{}' ya se encuentra registrada.", studentDTO.getNationalId());
             throw new BadRequestException("La identificación '" + studentDTO.getNationalId() + "' ya se encuentra registrada.");
         }
         StudentDTO result = studentService.save(studentDTO);
