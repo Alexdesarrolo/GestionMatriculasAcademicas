@@ -45,12 +45,15 @@ public class UserController {
         LOG.debug("REST request to save User : {}", userDTO);
 
         if (userDTO.getId() != null) {
+            LOG.error("Intento de crear usuario con ID existente: {}", userDTO.getId());
             throw new BadRequestException("Un nuevo usuario no puede tener ID");
         }
         if (userRepository.findOneByLogin(userDTO.getLogin().toLowerCase()).isPresent()) {
+            LOG.error("El login '{}' ya está en uso.", userDTO.getLogin());
             throw new BadRequestException("El login ya está en uso");
         }
         if (userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()).isPresent()) {
+            LOG.error("El email '{}' ya está en uso.", userDTO.getEmail());
             throw new BadRequestException("El email ya está en uso");
         }
 
