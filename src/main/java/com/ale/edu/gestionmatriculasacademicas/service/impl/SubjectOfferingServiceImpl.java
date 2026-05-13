@@ -6,6 +6,7 @@ import com.ale.edu.gestionmatriculasacademicas.repository.SubjectOfferingReposit
 import com.ale.edu.gestionmatriculasacademicas.service.SubjectOfferingService;
 import com.ale.edu.gestionmatriculasacademicas.service.dto.SubjectOfferingDTO;
 import com.ale.edu.gestionmatriculasacademicas.service.mapper.SubjectOfferingMapper;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,6 +43,7 @@ public class SubjectOfferingServiceImpl implements SubjectOfferingService {
     @Override
     public SubjectOfferingDTO save(SubjectOfferingDTO subjectOfferingDTO) {
         LOG.debug("Request to save SubjectOffering : {}", subjectOfferingDTO);
+        validateDuration(subjectOfferingDTO);
         SubjectOffering subjectOffering = subjectOfferingMapper.toEntity(subjectOfferingDTO);
         subjectOffering = subjectOfferingRepository.save(subjectOffering);
         return subjectOfferingMapper.toDto(subjectOffering);
@@ -50,9 +52,24 @@ public class SubjectOfferingServiceImpl implements SubjectOfferingService {
     @Override
     public SubjectOfferingDTO update(SubjectOfferingDTO subjectOfferingDTO) {
         LOG.debug("Request to update SubjectOffering : {}", subjectOfferingDTO);
+        validateDuration(subjectOfferingDTO);
         SubjectOffering subjectOffering = subjectOfferingMapper.toEntity(subjectOfferingDTO);
         subjectOffering = subjectOfferingRepository.save(subjectOffering);
         return subjectOfferingMapper.toDto(subjectOffering);
+    }
+
+    private void validateDuration(SubjectOfferingDTO dto) {
+        if (dto.getStartTime() == null || dto.getEndTime() == null) {
+            throw new IllegalArgumentException("Start time and end time must not be null");
+        }
+        Duration duration = Duration.between(dto.getStartTime(), dto.getEndTime());
+        if (duration.isNegative()) {
+            throw new IllegalArgumentException("End time must be after start time");
+        }
+        long hours = duration.toHours();
+        if (hours < 2 || hours > 8) {
+            throw new IllegalArgumentException("Duration must be between 2 and 8 hours. Current: " + hours + " hours.");
+        }
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.ale.edu.gestionmatriculasacademicas.service.dto;
 
 import java.io.Serializable;
-import java.time.ZonedDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 import com.ale.edu.gestionmatriculasacademicas.domain.enumeration.DayOfWeek;
@@ -12,8 +12,8 @@ import com.ale.edu.gestionmatriculasacademicas.domain.enumeration.DayOfWeek;
 public class SubjectOfferingDTO implements Serializable {
 
     private Long id;
-    private ZonedDateTime startTime;
-    private ZonedDateTime endTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private DayOfWeek dayOfWeek;
     private String semester;
     private Integer capacity;
@@ -29,19 +29,19 @@ public class SubjectOfferingDTO implements Serializable {
         this.id = id;
     }
 
-    public ZonedDateTime getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(ZonedDateTime startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public ZonedDateTime getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(ZonedDateTime endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
 

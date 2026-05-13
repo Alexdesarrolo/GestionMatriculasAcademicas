@@ -1,7 +1,7 @@
 package com.ale.edu.gestionmatriculasacademicas.domain;
 
 import java.io.Serializable;
-import java.time.ZonedDateTime;
+import java.time.LocalTime;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -40,11 +40,11 @@ public class SubjectOffering implements Serializable {
 
     @NotNull
     @Column(name = "start_time", nullable = false)
-    private ZonedDateTime startTime;
+    private LocalTime startTime;
 
     @NotNull
     @Column(name = "end_time", nullable = false)
-    private ZonedDateTime endTime;
+    private LocalTime endTime;
 
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -74,19 +74,19 @@ public class SubjectOffering implements Serializable {
         this.id = id;
     }
 
-    public ZonedDateTime getStartTime() {
+    public LocalTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(ZonedDateTime startTime) {
+    public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
     }
 
-    public ZonedDateTime getEndTime() {
+    public LocalTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(ZonedDateTime endTime) {
+    public void setEndTime(LocalTime endTime) {
         this.endTime = endTime;
     }
 
