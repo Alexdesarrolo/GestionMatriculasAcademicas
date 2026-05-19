@@ -1,9 +1,8 @@
 package com.ale.edu.gestionmatriculasacademicas.service;
 
+import java.security.SecureRandom;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -180,8 +179,8 @@ public class UserService {
         String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+";
         
         // 2. Usar StringBuilder para construir la cadena eficientemente
-        Random random = new Random();
-        int longitud = random.nextInt(5) + 11; // longitud entre 10 y 14 caracteres
+        SecureRandom random = new SecureRandom();
+        int longitud = random.nextInt(5) + 11; // longitud entre 11 y 15 caracteres
         StringBuilder sb = new StringBuilder(longitud);
         
 
